@@ -31,13 +31,13 @@ Auto generated docs for Concord can be found in `docs` folder, or on the [GitHub
 
 ## Installation
 
-Download the repository and copy the 'concord' folder into your project. Then require it in your project like so:
+Download the repository and copy the 'Concord' folder into your project. Then require it in your project like so:
 
 ```lua
 local Concord = require("path.to.concord")
 ```
 
-Concord has a bunch of modules. These can be accessed through Concord:
+Concord has a bunch of modules. These can be accessed through `Concord`:
 
 ```lua
 -- Modules
@@ -523,12 +523,7 @@ end
 
 ## Contributors
 
-- **Positive07**: Constant support and a good rubberduck
-- **Brbl**: Early testing and issue reporting
-- **Josh**: Squashed a few bugs and generated docs
-- **Erasio**: I took inspiration from HooECS. He also introduced me to ECS
-- **Speak**: Lots of testing for new features of Concord
-- **Tesselode**: Brainstorming and helpful support
+See https://github.com/Keyslam/Concord#contributors for original list of contributors
 
 ---
 
