@@ -2,25 +2,27 @@
 
 Concord is a feature complete ECS for LÖVE.
 It's main focus is performance and ease of use.
-With Concord it is possibile to easily write fast and clean code. 
+With Concord it is possibile to easily write fast and clean code.
 
 This readme will explain how to use Concord.
 
 Additionally all of Concord is documented using the LDoc format.
 Auto generated docs for Concord can be found in `docs` folder, or on the [GitHub page](https://keyslam.github.io/Concord/).
 
---- 
+---
 
-## Table of Contents  
+## Table of Contents
+
 [Installation](#installation)  
 [ECS](#ecs)  
 [API](#api) :
-- [Components](#components)  
-- [Entities](#entities)  
+
+- [Components](#components)
+- [Entities](#entities)
 - [Systems](#systems)
 - [Worlds](#worlds)
 - [Assemblages](#assemblages)
-  
+
 [Quick Example](#quick-example)  
 [Contributors](#contributors)  
 [License](#licence)
@@ -28,7 +30,9 @@ Auto generated docs for Concord can be found in `docs` folder, or on the [GitHub
 ---
 
 ## Installation
-Download the repository and copy the 'concord' folder into your project. Then require it in your project like so: 
+
+Download the repository and copy the 'concord' folder into your project. Then require it in your project like so:
+
 ```lua
 local Concord = require("path.to.concord")
 ```
@@ -49,6 +53,7 @@ local Components  = Concord.components
 ---
 
 ## ECS
+
 Concord is an Entity Component System (ECS for short) library.
 This is a coding paradigm where _composition_ is used over _inheritance_.
 Because of this it is easier to write more modular code. It often allows you to combine any form of behaviour for the objects in your game (Entities).
@@ -57,16 +62,19 @@ As the name might suggest, ECS consists of 3 core things: Entities, Components, 
 We'll start with the simplest one.
 
 ### Components
+
 Components are pure raw data. In Concord this is just a table with some fields.
-A position component might look like 
+A position component might look like
 `{ x = 100, y = 50}`, whereas a health Component might look like `{ currentHealth = 10, maxHealth = 100 }`.
 What is most important is that Components are data and nothing more. They have 0 functionality.
 
 ### Entities
+
 Entities are the actual objects in your game. Like a player, an enemy, a crate, or a bullet.
 Every Entity has it's own set of Components, with their own values.
 
 A crate might have the following components (Note: Not actual Concord syntax):
+
 ```lua
 {
     position = { x = 100, y = 200 },
@@ -76,6 +84,7 @@ A crate might have the following components (Note: Not actual Concord syntax):
 ```
 
 Whereas a player might have the following components:
+
 ```lua
 {
     position     = { x = 200, y = 300 },
@@ -88,6 +97,7 @@ Whereas a player might have the following components:
 Any Component can be given to any Entity (once). Which Components an Entity has will determine how it behaves. This is done through the last thing...
 
 ### Systems
+
 Systems are the things that actually _do_ stuff. They contain all your fancy algorithms and cool game logic.
 Each System will do one specific task like say, drawing Entities.
 For this they will only act on Entities that have the Components needed for this: `position` and `texture`. All other Components are irrelevant.
@@ -109,6 +119,7 @@ end
 ```
 
 ### To summarize...
+
 - Components contain only data.
 - Entities contain any set of Components.
 - Systems act on Entities that have a required set of Components.
@@ -146,6 +157,7 @@ print(Concord.components.componentName)
 ```
 
 #### Method chaining
+
 ```lua
 -- Most (if not all) methods will return self
 -- This allowes you to chain methods
@@ -164,12 +176,13 @@ myWorld
 ```
 
 ### Components
+
 When defining a ComponentClass you need to pass in a name and usually a `populate` function. This will fill the Component with values.
 
 ```lua
 -- Create the position class with a populate function
 -- The component variable is the actual Component given to an Entity
--- The x and y variables are values we pass in when we create the Component 
+-- The x and y variables are values we pass in when we create the Component
 Concord.component("position" function(component, x, y)
     component.x = x or 0
     component.y = y or 0
@@ -182,6 +195,7 @@ local pushableComponentClass = Concord.component("position")
 ```
 
 ### Entities
+
 Entities can be freely made and be given Components. You pass the name of the ComponentClass and the values you want to pass. It will then create the Component for you.
 
 Entities can only have a maximum of one of each Component.
@@ -189,7 +203,7 @@ Entities can not share Components.
 
 ```lua
 -- Create a new Entity
-local myEntity = Entity() 
+local myEntity = Entity()
 -- or
 local myEntity = Entity(myWorld) -- To add it to a world immediately ( See World )
 ```
@@ -294,14 +308,14 @@ end
 -- Defining a function
 function mySystemClass:update(dt)
     -- Iterate over all entities in the Pool
-    for _, e in ipairs(self.pool) 
+    for _, e in ipairs(self.pool)
         -- Do something with the Components
         e.position.x = e.position.x + e.velocity.x * dt
         e.position.y = e.position.y + e.velocity.y * dt
     end
 
     -- Iterate over all entities in the second Pool
-    for _, e in ipairs(self.secondPool) 
+    for _, e in ipairs(self.secondPool)
         -- Do something
     end
 end
@@ -431,8 +445,9 @@ myEntity:assemble(cat, 100) -- 100 cuteness
 ---
 
 ## Quick Example
+
 ```lua
-local Concord = require("concord")
+local Concord = require("Concord")
 
 -- Defining components
 Concord.component("position", function(c, x, y)
@@ -507,14 +522,16 @@ end
 ---
 
 ## Contributors
-- __Positive07__: Constant support and a good rubberduck
-- __Brbl__: Early testing and issue reporting
-- __Josh__: Squashed a few bugs and generated docs
-- __Erasio__: I took inspiration from HooECS. He also introduced me to ECS
-- __Speak__: Lots of testing for new features of Concord
-- __Tesselode__: Brainstorming and helpful support
+
+- **Positive07**: Constant support and a good rubberduck
+- **Brbl**: Early testing and issue reporting
+- **Josh**: Squashed a few bugs and generated docs
+- **Erasio**: I took inspiration from HooECS. He also introduced me to ECS
+- **Speak**: Lots of testing for new features of Concord
+- **Tesselode**: Brainstorming and helpful support
 
 ---
 
 ## License
+
 MIT Licensed - Copyright Justin van der Leij (Tjakka5)
