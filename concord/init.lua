@@ -4,9 +4,9 @@
 local PATH = (...):gsub('%.init$', '')
 
 local Concord = {
-   _VERSION     = "3.0",
-   _DESCRIPTION = "A feature-complete ECS library",
-   _LICENCE     = [[
+    _VERSION     = "3.0",
+    _DESCRIPTION = "A feature-complete ECS library",
+    _LICENCE     = [[
       MIT LICENSE
 
       Copyright (c) 2020 Justin van der Leij / Tjakka5
@@ -32,11 +32,11 @@ local Concord = {
    ]]
 }
 
-Concord.entity     = require(PATH..".entity")
-Concord.component  = require(PATH..".component")
-Concord.components = require(PATH..".components")
-Concord.system     = require(PATH..".system")
-Concord.world      = require(PATH..".world")
-Concord.utils      = require(PATH..".utils")
+Concord.entity     = require(PATH .. ".entity")
+Concord.component  = require(PATH .. ".component")
+Concord.components = require(PATH .. ".components")
+Concord.system     = require(PATH .. ".system")
+Concord.world      = require(PATH .. ".world")
+Concord.utils      = require(PATH .. ".utils")
 
 return Concord
