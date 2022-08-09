@@ -12,36 +12,42 @@ Component.__mt = {__index = Component}
 --- Creates a new ComponentClass.
 -- @tparam function populate Function that populates a Component with values
 -- @treturn Component A new ComponentClass
-function Component.new(name, populate)
-    if (type(name) ~= "string") then
-        error("bad argument #1 to 'Component.new' (string expected, got " ..
-                  type(name) .. ")", 2)
+function Component.new(id, populate, name)
+    if (type(id) ~= "number") then
+        error("bad argument #1 to 'Component.new' (number expected, got " ..
+                  type(id) .. ")", 2)
     end
 
-    if (rawget(Components, name)) then
+    local populate_t = type(populate)
+    if (populate_t ~= "function" and populate_t ~= "nil") then
         error(
-            "bad argument #1 to 'Component.new' (ComponentClass with name '" ..
-                name .. "' was already registerd)", 2)
-    end
-
-    if (type(populate) ~= "function" and type(populate) ~= "nil") then
-        error(
-            "bad argument #1 to 'Component.new' (function/nil expected, got " ..
+            "bad argument #2 to 'Component.new' (function/nil expected, got " ..
                 type(populate) .. ")", 2)
     end
 
-    local componentClass = setmetatable({
-        __populate = populate,
+    local name_t = type(name)
+    if (name_t ~= "string" and name_t ~= "nil") then
+        error(
+            "bad argument #3 to 'Component.new' (string/nil expected, got " ..
+                type(name) .. ")", 2)
+    end
 
+    if (rawget(Components, id)) then
+        error("ComponentClass with id '" .. id .. "' was already registered)", 2)
+    end
+
+    local component_class = setmetatable({
+        __populate = populate,
+        __id = id,
         __name = name,
-        __isComponentClass = true
+        __is_component_class = true
     }, Component.__mt)
 
-    componentClass.__mt = {__index = componentClass}
+    component_class.__mt = {__index = component_class}
 
-    Components[name] = componentClass
+    Components[id] = component_class
 
-    return componentClass
+    return component_class
 end
 
 -- Internal: Populates a Component with values
@@ -52,9 +58,8 @@ function Component:serialize()
     local data = Utils.shallowCopy(self, {})
 
     -- This values shouldn't be copied over
-    data.__componentClass = nil
-    data.__isComponent = nil
-    data.__isComponentClass = nil
+    data.__is_component = nil
+    data.__is_component_class = nil
 
     return data
 end
@@ -65,10 +70,8 @@ function Component:deserialize(data) Utils.shallowCopy(data, self) end
 -- @return A new Component
 function Component:__new()
     local component = setmetatable({
-        __componentClass = self,
-
-        __isComponent = true,
-        __isComponentClass = false
+        __is_component = true,
+        __is_component_class = false
     }, self.__mt)
 
     return component
@@ -93,5 +96,6 @@ function Component:hasName() return self.__name and true or false end
 -- @treturn string
 function Component:getName() return self.__name end
 
-return setmetatable(Component,
-                    {__call = function(_, ...) return Component.new(...) end})
+return setmetatable(Component, {
+    __call = function(_, id, init, name) return Component.new(id, init, name) end
+})

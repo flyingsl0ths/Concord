@@ -34,7 +34,6 @@ System.mt = {
 
         for name, filter in pairs(systemClass.__filter) do
             local pool = Pool(name, filter)
-
             system[name] = pool
             system.__pools[#system.__pools + 1] = pool
         end
@@ -45,35 +44,43 @@ System.mt = {
     end
 }
 
-local validateFilters = function(baseFilters)
+local function makeFilter(components_list)
+    local filter = {}
+    local status = {method_name = "System.new", throw_error = true}
+
+    for _, component_id in ipairs(components_list) do
+        local ok, component_class = Components.try(component_id)
+
+        status.ok = ok
+        status.component_class = component_class
+
+        Utils.checkComponentAccess(status)
+
+        filter[#filter + 1] = component_class
+    end
+
+    return filter
+end
+
+local function isValidFilter(name, components_list)
+    if type(name) ~= 'string' then
+        error("invalid name for filter (string expected, got " .. type(name) ..
+                  ")", 3)
+    end
+
+    if type(components_list) ~= 'table' then
+        error("invalid component list for filter '" .. name ..
+                  "' (table expected, got " .. type(components_list) .. ")", 3)
+    end
+end
+
+local validateFilters = function(base_filters)
     local filters = {}
 
-    for name, componentsList in pairs(baseFilters) do
-        if type(name) ~= 'string' then
-            error("invalid name for filter (string key expected, got " ..
-                      type(name) .. ")", 3)
-        end
+    for name, components_list in pairs(base_filters) do
+        isValidFilter(name, components_list)
 
-        if type(componentsList) ~= 'table' then
-            error("invalid component list for filter '" .. name ..
-                      "' (table expected, got " .. type(componentsList) .. ")",
-                  3)
-        end
-
-        local filter = {}
-        for n, component in ipairs(componentsList) do
-            local ok, componentClass = Components.try(component)
-
-            if not ok then
-                error("invalid component for filter '" .. name ..
-                          "' at position #" .. n .. " (" .. componentClass ..
-                          ")", 3)
-            end
-
-            filter[#filter + 1] = componentClass
-        end
-
-        filters[name] = filter
+        filters[name] = makeFilter(components_list)
     end
 
     return filters
@@ -87,7 +94,8 @@ function System.new(filters)
         __filter = validateFilters(filters),
 
         __name = nil,
-        __isSystemClass = true
+        __isSystemClass = true,
+        __pools = {}
     }, System.mt)
     systemClass.__index = systemClass
 

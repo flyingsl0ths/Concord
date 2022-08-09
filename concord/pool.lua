@@ -29,9 +29,9 @@ end
 -- @treturn boolean
 function Pool:eligible(e)
     for i = #self.__filter, 1, -1 do
-        local component = self.__filter[i].__name
+        local component_id = self.__filter[i].__id
 
-        if not e[component] then return false end
+        if not e.__components[component_id] then return false end
     end
 
     return true

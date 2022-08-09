@@ -5,6 +5,7 @@ local PATH = (...):gsub('%.[^%.]+$', '')
 
 local Components = require(PATH .. ".components")
 local Type = require(PATH .. ".type")
+local Utils = require(PATH .. ".utils")
 
 local Entity = {}
 
@@ -28,20 +29,22 @@ function Entity.new(world)
     return e
 end
 
-local function give(e, name, componentClass, ...)
-    local component = componentClass:__initialize(...)
+local function give(e, component_id, component_class, ...)
+    local component = component_class:__initialize(...)
 
-    e[name] = component
-    e.__components[name] = component
+    e.__components[component_id] = component
 
     e:__dirty()
+
+    return e
 end
 
-local function remove(e, name)
-    e[name] = nil
-    e.__components[name] = nil
+local function remove(e, component_id)
+    e.__components[component_id] = nil
 
     e:__dirty()
+
+    return e
 end
 
 --- Gives an Entity a Component.
@@ -49,16 +52,17 @@ end
 -- @tparam Component componentClass ComponentClass to add an instance of
 -- @param ... additional arguments to pass to the Component's populate function
 -- @treturn Entity self
-function Entity:give(name, ...)
-    local ok, componentClass = Components.try(name)
+function Entity:give(component_id, ...)
+    local ok, component_class = Components.try(component_id)
 
-    if not ok then
-        error("bad argument #1 to 'Entity:get' (" .. componentClass .. ")", 2)
-    end
+    Utils.checkComponentAccess({
+        ok = ok,
+        component_class = component_class,
+        method_name = "Entity:give",
+        component_id = component_id
+    })
 
-    give(self, name, componentClass, ...)
-
-    return self
+    return give(self, component_id, component_class, ...)
 end
 
 --- Ensures an Entity to have a Component.
@@ -66,31 +70,38 @@ end
 -- @tparam Component componentClass ComponentClass to add an instance of
 -- @param ... additional arguments to pass to the Component's populate function
 -- @treturn Entity self
-function Entity:ensure(name, ...)
-    local ok, componentClass = Components.try(name)
+function Entity:ensure(component_id, ...)
+    local ok, component_class = Components.try(component_id)
 
-    if not ok then
-        error("bad argument #1 to 'Entity:get' (" .. componentClass .. ")", 2)
-    end
+    Utils.checkComponentAccess({
+        ok = ok,
+        component_class = component_class,
+        method_name = "Entity:ensure",
+        component_id = component_id
+    })
 
-    if self[name] then return self end
+    if self.__components[component_id] then return self end
 
-    give(self, name, componentClass, ...)
-
-    return self
+    return give(self, component_id, component_class, ...)
 end
 
 --- Removes a Component from an Entity.
 -- @tparam Component componentClass ComponentClass of the Component to remove
 -- @treturn Entity self
-function Entity:remove(name)
-    local ok, _ = Components.try(name)
+function Entity:remove(component_id)
+    local ok, component_class = Components.try(component_id)
 
-    if not ok then error("Component: " .. name .. "does not exist", 2) end
+    Utils.checkComponentAccess({
+        ok = ok,
+        component_class = component_class,
+        method_name = "Entity:remove",
+        component_id = component_id,
+        throw_error = true
+    })
 
-    remove(self, name)
+    if self.__components[component_id] == nil then return self end
 
-    return self
+    return remove(self, component_id)
 end
 
 --- Assembles an Entity.
@@ -128,34 +139,40 @@ end
 --- Returns true if the Entity has a Component.
 -- @tparam Component componentClass ComponentClass of the Component to check
 -- @treturn boolean
-function Entity:has(name)
-    local ok, componentClass = Components.try(name)
+function Entity:has(component_id)
+    local ok, component_class = Components.try(component_id)
 
-    if not ok then
-        error("bad argument #1 to 'Entity:has' (" .. componentClass .. ")", 2)
-    end
+    Utils.checkComponentAccess({
+        ok = ok,
+        component_class = component_class,
+        method_name = "Entity:has",
+        component_id = component_id
+    })
 
-    return self[name] and true or false
+    return self.__components[component_id] and true or false
 end
 
 --- Gets a Component from the Entity.
 -- @tparam Component componentClass ComponentClass of the Component to get
 -- @treturn table
-function Entity:get(name)
-    local ok, componentClass = Components.try(name)
+function Entity:get(component_id, skip_check)
+    local ok, component_class = Components.try(component_id)
 
-    if not ok then
-        error("bad argument #1 to 'Entity:get' (" .. componentClass .. ")", 2)
+    if skip_check then
+        Utils.checkComponentAccess({
+            ok = ok,
+            component_class = component_class,
+            method_name = "Entity:get",
+            component_id = component_id
+        })
     end
 
-    return self[name]
+    return self.__components[component_id]
 end
 
---- Returns a table of all Components the Entity has.
--- Warning: Do not modify this table.
--- Use Entity:give/ensure/remove instead
+--- Returns a read-only table of all Components the Entity has.
 -- @treturn table Table of all Components the Entity has
-function Entity:getComponents() return self.__components end
+function Entity:getComponents() return Utils.readOnly(self.__components) end
 
 --- Returns true if the Entity is in a World.
 -- @treturn boolean
@@ -165,16 +182,25 @@ function Entity:inWorld() return self.__world and true or false end
 -- @treturn World
 function Entity:getWorld() return self.__world end
 
+local function serializeComponent(component)
+    local component_data = component:serialize()
+
+    if component_data == nil then return nil end
+
+    component_data.__id = component.__id
+    component_data.__name = component.__name
+
+    return component_data
+end
+
 function Entity:serialize()
     local data = {}
 
     for _, component in pairs(self.__components) do
-        if component.__name then
-            local componentData = component:serialize()
-
-            if componentData ~= nil then
-                componentData.__name = component.__name
-                data[#data + 1] = componentData
+        if component.__id then
+            local component_data = serializeComponent(component)
+            if component_data ~= nil then
+                data[#data + 1] = component_data
             end
         end
     end
@@ -182,26 +208,40 @@ function Entity:serialize()
     return data
 end
 
+local function onPreDeserialization(component_data)
+    local component_id = component_data.__id
+    local component_name = component_data.__name
+
+    component_data.__id = nil
+    component_data.__name = nil
+
+    if (not Components.has(component_id)) then
+        error("ComponentClass '" .. component_name .. "' has yet to be loaded")
+    end
+
+    return component_id
+end
+
+local function onDeserialization(entity, component_id, component_data)
+    local component_class = Components[component_id]
+
+    local component = component_class:__new()
+
+    component:deserialize(component_data)
+
+    entity.__components[component_id] = component
+
+    entity:__dirty()
+end
+
 function Entity:deserialize(data)
     for i = 1, #data do
-        local componentData = data[i]
+        local current = data[i]
+        local data_id = onPreDeserialization(current)
 
-        if (not Components.has(componentData.__name)) then
-            error("bad argument #1 to 'Entity:deserialize' (ComponentClass '" ..
-                      tostring(componentData.__name) .. "' wasn't yet loaded)")
-        end
-
-        local componentClass = Components[componentData.__name]
-
-        local component = componentClass:__new()
-        component:deserialize(componentData)
-
-        self[componentData.__name] = component
-        self.__components[componentData.__name] = component
-
-        self:__dirty()
+        onDeserialization(self, data_id, current)
     end
 end
 
 return setmetatable(Entity,
-                    {__call = function(_, ...) return Entity.new(...) end})
+                    {__call = function(_, world) return Entity.new(world) end})

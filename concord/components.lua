@@ -6,24 +6,19 @@ local Components = {}
 -- the specified name
 -- @string name Name of the ComponentClass to check
 -- @treturn boolean
-function Components.has(name) return rawget(Components, name) and true or false end
+function Components.has(component_id)
+    return rawget(Components, component_id) and true or false
+end
 
 --- Returns true and the ComponentClass if one was registered with the specified
 -- name or false and an error otherwise
 -- @string name Name of the ComponentClass to check
 -- @treturn boolean
 -- @treturn Component or error string
-function Components.try(name)
-    if type(name) ~= "string" then
-        return false, "ComponentsClass name is expected to be a string, got " ..
-                   type(name) .. ")"
-    end
+function Components.try(component_id)
+    if type(component_id) ~= "number" then return false, nil end
 
-    local value = rawget(Components, name)
-    if not value then
-        return false, "ComponentClass '" .. name ..
-                   "' does not exist / was not registered"
-    end
+    local value = rawget(Components, component_id)
 
     return true, value
 end
@@ -31,20 +26,16 @@ end
 --- Returns the ComponentClass with the specified name
 -- @string name Name of the ComponentClass to get
 -- @treturn Component
-function Components.get(name)
-    local ok, value = Components.try(name)
+function Components.get(component_id)
+    local ok, component = Components.try(component_id)
 
-    if not ok then error(value, 2) end
+    if not ok then
+        error("Component with id: " .. component_id .. " does not exist", 2)
+    end
 
-    return value
+    return component
 end
 
 return setmetatable(Components, {
-    __index = function(_, name)
-        local ok, value = Components.try(name)
-
-        if not ok then error(value, 2) end
-
-        return value
-    end
+    __index = function(_, component_id) return Components.get(component_id) end
 })

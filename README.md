@@ -447,76 +447,73 @@ myEntity:assemble(cat, 100) -- 100 cuteness
 ## Quick Example
 
 ```lua
-local Concord = require("Concord")
+local Concord = require("concord")
 
--- Defining components
-Concord.component("position", function(c, x, y)
+local ComponentIds = Concord.utils.readOnly({
+    POSITION = 1,
+    VELOCITY = 2,
+    DRAWABLE = 3
+})
+
+Concord.component(ComponentIds.POSITION, function(c, x, y)
     c.x = x or 0
     c.y = y or 0
-end)
+end, "position")
 
-Concord.component("velocity", function(c, x, y)
+Concord.component(ComponentIds.VELOCITY, function(c, x, y)
     c.x = x or 0
     c.y = y or 0
-end)
+end, "velocity")
 
-local Drawable = Concord.component("drawable")
+Concord.component(ComponentIds.DRAWABLE, nil, "drawable")
 
-
--- Defining Systems
 local MoveSystem = Concord.system({
-    pool = {"position", "velocity"}
+    pool = {ComponentIds.POSITION, ComponentIds.VELOCITY}
 })
 
 function MoveSystem:update(dt)
-    for _, e in ipairs(self.pool) do
-        e.position.x = e.position.x + e.velocity.x * dt
-        e.position.y = e.position.y + e.velocity.y * dt
+    local pool = self.pool
+    for i = 1, pool.size do
+        local entity = pool[i]
+        local position_component = entity:get(ComponentIds.POSITION, true)
+
+        local velocity_component = entity:get(ComponentIds.VELOCITY, true)
+        local vx = velocity_component.x
+        local vy = velocity_component.y
+
+        position_component.x = position_component.x + vx * dt
+        position_component.y = position_component.y + vy * dt
     end
 end
 
-
 local DrawSystem = Concord.system({
-    pool = {"position", "drawable"}
+    pool = {ComponentIds.POSITION, ComponentIds.DRAWABLE}
 })
 
 function DrawSystem:draw()
-    for _, e in ipairs(self.pool) do
-        love.graphics.circle("fill", e.position.x, e.position.y, 5)
+    local pool = self.pool
+    for i = 1, pool.size do
+        local position_component = pool[i]:get(ComponentIds.POSITION, true)
+
+        love.graphics.circle("fill", position_component.x, position_component.y,
+                             20)
     end
 end
 
-
--- Create the World
 local world = Concord.world()
 
--- Add the Systems
 world:addSystems(MoveSystem, DrawSystem)
 
--- This Entity will be rendered on the screen, and move to the right at 100 pixels a second
-local entity_1 = Concord.entity(world)
-:give("position", 100, 100)
-:give("velocity", 100, 0)
-:give("drawable")
+Concord.entity(world):give(ComponentIds.POSITION, 100, 100):give(
+    ComponentIds.VELOCITY, 100, 0):give(ComponentIds.DRAWABLE)
 
--- This Entity will be rendered on the screen, and stay at 50, 50
-local entity_2 = Concord.entity(world)
-:give("position", 50, 50)
-:give("drawable")
+Concord.entity(world):give(ComponentIds.POSITION, 120, 120):give(
+    ComponentIds.VELOCITY, 110, 0):give(ComponentIds.DRAWABLE)
 
--- This Entity does exist in the World, but since it doesn't match any System's filters it won't do anything
-local entity_3 = Concord.entity(world)
-:give("position", 200, 200)
+function love.update(dt) world:emit("update", dt) end
 
+function love.draw() world:emit("draw") end
 
--- Emit the events
-function love.update(dt)
-    world:emit("update", dt)
-end
-
-function love.draw()
-    world:emit("draw")
-end
 ```
 
 ---
