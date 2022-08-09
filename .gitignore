@@ -40,4 +40,4 @@ luac.out
 *.hex
 
 .vscode
-demo.lua
+main.lua
