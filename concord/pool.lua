@@ -4,6 +4,7 @@
 local PATH = (...):gsub('%.[^%.]+$', '')
 
 local List = require(PATH .. ".list")
+local Utils = require(PATH .. ".utils")
 
 local Pool = {}
 
@@ -13,13 +14,12 @@ Pool.__mt = {__index = Pool}
 -- @string name Name for the Pool.
 -- @tparam table filter Table containing the required BaseComponents
 -- @treturn Pool The new Pool
-function Pool.new(name, filter)
+function Pool.new(filter)
     local pool = setmetatable(List(), Pool.__mt)
 
-    pool.__name = name
     pool.__filter = filter
 
-    pool.__isPool = true
+    pool.__is_pool = true
 
     return pool
 end
@@ -76,14 +76,10 @@ function Pool:evaluate(e)
     return self
 end
 
---- Gets the name of the Pool
--- @treturn string
-function Pool:getName() return self.__name end
-
 --- Gets the filter of the Pool.
 -- Warning: Do not modify this filter.
 -- @return Filter of the Pool.
-function Pool:getFilter() return self.__filter end
+function Pool:getFilter() return Utils.readOnly(self.__filter) end
 
 --- Callback for when an Entity is added to the Pool.
 -- @tparam Entity e Entity that was added.
@@ -97,5 +93,5 @@ end
 
 return setmetatable(Pool, {
     __index = List,
-    __call = function(_, ...) return Pool.new(...) end
+    __call = function(_, filter) return Pool.new(filter) end
 })

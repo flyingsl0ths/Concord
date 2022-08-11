@@ -452,8 +452,11 @@ local Concord = require("concord")
 local ComponentIds = Concord.utils.readOnly({
     POSITION = 1,
     VELOCITY = 2,
-    DRAWABLE = 3
+    DRAWABLE = 3,
+    PLAYER_INPUT = 4
 })
+
+local SystemIds = Concord.utils.readOnly({MOVE = 1, DRAW = 2, PLAYER_INPUT = 3})
 
 Concord.component(ComponentIds.POSITION, function(c, x, y)
     c.x = x or 0
@@ -467,27 +470,65 @@ end, "velocity")
 
 Concord.component(ComponentIds.DRAWABLE, nil, "drawable")
 
-local MoveSystem = Concord.system({
-    pool = {ComponentIds.POSITION, ComponentIds.VELOCITY}
+Concord.component(ComponentIds.PLAYER_INPUT, nil, "input")
+
+local PlayerInputSystem = Concord.system(SystemIds.PLAYER_INPUT, "player_input",
+                                         {
+    ComponentIds.VELOCITY, ComponentIds.PLAYER_INPUT
+})
+
+function PlayerInputSystem:update()
+    local e = self.pool[1]
+    local velocity_component = e:get(ComponentIds.VELOCITY, true)
+
+    if love.keyboard.isDown("left") then
+        if velocity_component.x >= 0 then
+            velocity_component.x = -velocity_component.x
+        end
+    end
+
+    if love.keyboard.isDown("right") then
+        if velocity_component.x < 0 then
+            velocity_component.x = velocity_component.x * -1
+        end
+    end
+
+    if love.keyboard.isDown("up") then
+        if velocity_component.y < 0 then
+            velocity_component.y = velocity_component.y * -1
+        end
+    end
+
+    if love.keyboard.isDown("down") then
+        if velocity_component.y >= 0 then
+            velocity_component.y = -velocity_component.y
+        end
+    end
+end
+
+local MoveSystem = Concord.system(SystemIds.MOVE, "move", {
+    ComponentIds.POSITION, ComponentIds.VELOCITY
 })
 
 function MoveSystem:update(dt)
     local pool = self.pool
-    for i = 1, pool.size do
-        local entity = pool[i]
-        local position_component = entity:get(ComponentIds.POSITION, true)
 
+    local function onMove(entity)
+        local position_component = entity:get(ComponentIds.POSITION, true)
         local velocity_component = entity:get(ComponentIds.VELOCITY, true)
+
         local vx = velocity_component.x
         local vy = velocity_component.y
 
         position_component.x = position_component.x + vx * dt
         position_component.y = position_component.y + vy * dt
     end
+
+    for i = 1, pool.size do onMove(pool[i]) end
 end
 
-local DrawSystem = Concord.system({
-    pool = {ComponentIds.POSITION, ComponentIds.DRAWABLE}
+local DrawSystem = Concord.system(SystemIds.DRAW, "draw", {
+    ComponentIds.POSITION, ComponentIds.DRAWABLE
 })
 
 function DrawSystem:draw()
@@ -502,10 +543,11 @@ end
 
 local world = Concord.world()
 
-world:addSystems(MoveSystem, DrawSystem)
+world:addSystems(MoveSystem, PlayerInputSystem, DrawSystem)
 
 Concord.entity(world):give(ComponentIds.POSITION, 100, 100):give(
-    ComponentIds.VELOCITY, 100, 0):give(ComponentIds.DRAWABLE)
+    ComponentIds.VELOCITY, 100, 0):give(ComponentIds.DRAWABLE):give(
+    ComponentIds.PLAYER_INPUT)
 
 Concord.entity(world):give(ComponentIds.POSITION, 120, 120):give(
     ComponentIds.VELOCITY, 110, 0):give(ComponentIds.DRAWABLE)
@@ -513,7 +555,6 @@ Concord.entity(world):give(ComponentIds.POSITION, 120, 120):give(
 function love.update(dt) world:emit("update", dt) end
 
 function love.draw() world:emit("draw") end
-
 ```
 
 ---

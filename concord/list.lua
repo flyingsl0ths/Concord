@@ -24,6 +24,15 @@ function List:add(obj)
     return self
 end
 
+local function onRemove(list, size, index)
+    local other = list[size]
+
+    list[index] = other
+    list[other] = index
+
+    list[size] = nil
+end
+
 --- Removes an object from the List.
 -- @param obj Object to remove
 -- @treturn List self
@@ -35,12 +44,7 @@ function List:remove(obj)
     if index == size then
         self[size] = nil
     else
-        local other = self[size]
-
-        self[index] = other
-        self[other] = index
-
-        self[size] = nil
+        onRemove(self, size, index)
     end
 
     self[obj] = nil
@@ -49,15 +53,17 @@ function List:remove(obj)
     return self
 end
 
+local function onClear(list, i)
+    local obj = list[i]
+
+    list[obj] = nil
+    list[i] = nil
+end
+
 --- Clears the List completely.
 -- @treturn List self
 function List:clear()
-    for i = 1, self.size do
-        local o = self[i]
-
-        self[o] = nil
-        self[i] = nil
-    end
+    for i = 1, self.size do onClear(self, i) end
 
     self.size = 0
 

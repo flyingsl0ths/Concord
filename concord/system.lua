@@ -13,30 +13,23 @@ local System = {ENABLE_OPTIMIZATION = true}
 
 System.mt = {
     __index = System,
-    __call = function(systemClass, world)
+    __call = function(system_class, world)
         local system = setmetatable({
             __enabled = true,
-
-            __pools = {},
             __world = world,
-
-            __isSystem = true,
-            __isSystemClass = false -- Overwrite value from systemClass
-        }, systemClass)
+            __is_system = true,
+            __is_system_class = false -- Overwrite value from system_class
+        }, system_class)
 
         -- Optimization: We deep copy the System class into our instance
         -- of a system. This grants slightly faster access times at the
         -- cost of memory. Since there (generally) won't be many instances
         -- of worlds this is a worthwhile tradeoff
         if (System.ENABLE_OPTIMIZATION) then
-            Utils.shallowCopy(systemClass, system)
+            Utils.shallowCopy(system_class, system)
         end
 
-        for name, filter in pairs(systemClass.__filter) do
-            local pool = Pool(name, filter)
-            system[name] = pool
-            system.__pools[#system.__pools + 1] = pool
-        end
+        system.pool = Pool(system_class.__filter)
 
         system:init(world)
 
@@ -44,78 +37,55 @@ System.mt = {
     end
 }
 
-local function makeFilter(components_list)
+local function makeFilter(component_id, filter)
+    local ok, component_class = Components.try(component_id)
+
+    Utils.checkComponentAccess({
+        method_name = "System.new",
+        throw_error = true,
+        ok = ok,
+        component_class = component_class
+    })
+
+    filter[#filter + 1] = component_class
+end
+
+local validateFilter = function(base_filter)
     local filter = {}
-    local status = {method_name = "System.new", throw_error = true}
 
-    for _, component_id in ipairs(components_list) do
-        local ok, component_class = Components.try(component_id)
-
-        status.ok = ok
-        status.component_class = component_class
-
-        Utils.checkComponentAccess(status)
-
-        filter[#filter + 1] = component_class
-    end
+    for _, component in pairs(base_filter) do makeFilter(component, filter) end
 
     return filter
-end
-
-local function isValidFilter(name, components_list)
-    if type(name) ~= 'string' then
-        error("invalid name for filter (string expected, got " .. type(name) ..
-                  ")", 3)
-    end
-
-    if type(components_list) ~= 'table' then
-        error("invalid component list for filter '" .. name ..
-                  "' (table expected, got " .. type(components_list) .. ")", 3)
-    end
-end
-
-local validateFilters = function(base_filters)
-    local filters = {}
-
-    for name, components_list in pairs(base_filters) do
-        isValidFilter(name, components_list)
-
-        filters[name] = makeFilter(components_list)
-    end
-
-    return filters
 end
 
 --- Creates a new SystemClass.
 -- @param table filters A table containing filters (name = {components...})
 -- @treturn System A new SystemClass
-function System.new(filters)
-    local systemClass = setmetatable({
-        __filter = validateFilters(filters),
-
-        __name = nil,
-        __isSystemClass = true,
-        __pools = {}
+function System.new(id, name, filter)
+    local system_class = setmetatable({
+        __filter = validateFilter(filter),
+        __id = id,
+        __is_system_class = true,
+        __name = name
     }, System.mt)
-    systemClass.__index = systemClass
+    system_class.__index = system_class
 
     -- Optimization: We deep copy the World class into our instance
     -- of a world.This grants slightly faster access times at the
     -- cost of memory. Since there (generally) won't be many instances
     -- of worlds this is a worthwhile tradeoff
     if (System.ENABLE_OPTIMIZATION) then
-        Utils.shallowCopy(System, systemClass)
+        Utils.shallowCopy(System, system_class)
     end
 
-    return systemClass
+    return system_class
 end
 
 -- Internal: Evaluates an Entity for all the System's Pools.
 -- @param e The Entity to check
 -- @treturn System self
 function System:__evaluate(e)
-    for _, pool in ipairs(self.__pools) do pool:evaluate(e) end
-
+    self.pool:evaluate(e)
     return self
 end
 
@@ -123,9 +93,9 @@ end
 -- @param e The Entity to remove
 -- @treturn System self
 function System:__remove(e)
-    for _, pool in ipairs(self.__pools) do
-        if pool:has(e) then pool:remove(e) end
-    end
+    local pool = self.pool
+
+    if pool:has(e) then pool:remove(e) end
 
     return self
 end
@@ -133,7 +103,7 @@ end
 -- Internal: Clears all Entities from the System.
 -- @treturn System self
 function System:__clear()
-    for i = 1, #self.__pools do self.__pools[i]:clear() end
+    self.pool:clear()
 
     return self
 end
@@ -185,5 +155,8 @@ end
 function System:onDisabled() -- luacheck: ignore
 end
 
-return setmetatable(System,
-                    {__call = function(_, ...) return System.new(...) end})
+return setmetatable(System, {
+    __call = function(_, id, name, filter)
+        return System.new(id, name, filter)
+    end
+})
