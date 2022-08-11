@@ -20,9 +20,11 @@ function Entity.new(world)
                   type(world) .. ")", 2)
     end
 
-    local e = setmetatable(
-                  {__world = nil, __components = {}, __isEntity = true},
-                  Entity.__mt)
+    local e = setmetatable({
+        __world = nil,
+        __components = {},
+        __is_entity = true
+    }, Entity.__mt)
 
     if (world) then world:addEntity(e) end
 
@@ -34,17 +36,7 @@ local function give(e, component_id, component_class, ...)
 
     e.__components[component_id] = component
 
-    e:__dirty()
-
-    return e
-end
-
-local function remove(e, component_id)
-    e.__components[component_id] = nil
-
-    e:__dirty()
-
-    return e
+    return e:__dirty()
 end
 
 --- Gives an Entity a Component.
@@ -101,7 +93,9 @@ function Entity:remove(component_id)
 
     if self.__components[component_id] == nil then return self end
 
-    return remove(self, component_id)
+    self.__components[component_id] = nil
+
+    return self:__dirty()
 end
 
 --- Assembles an Entity.
@@ -241,6 +235,8 @@ function Entity:deserialize(data)
 
         onDeserialization(self, data_id, current)
     end
+
+    return self
 end
 
 return setmetatable(Entity,

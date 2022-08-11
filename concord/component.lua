@@ -9,10 +9,7 @@ local Component = {}
 
 Component.__mt = {__index = Component}
 
---- Creates a new ComponentClass.
--- @tparam function populate Function that populates a Component with values
--- @treturn Component A new ComponentClass
-function Component.new(id, populate, name)
+local function checkTypes(id, populate, name)
     if (type(id) ~= "number") then
         error("bad argument #1 to 'Component.new' (number expected, got " ..
                   type(id) .. ")", 2)
@@ -31,6 +28,13 @@ function Component.new(id, populate, name)
             "bad argument #3 to 'Component.new' (string/nil expected, got " ..
                 type(name) .. ")", 2)
     end
+end
+
+--- Creates a new ComponentClass.
+-- @tparam function populate Function that populates a Component with values
+-- @treturn Component A new ComponentClass
+function Component.new(id, populate, name)
+    checkTypes(id, populate, name)
 
     if (rawget(Components, id)) then
         error("ComponentClass with id '" .. id .. "' was already registered)", 2)

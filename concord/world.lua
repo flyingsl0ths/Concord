@@ -10,7 +10,7 @@ local Type = require(PATH .. ".type")
 local List = require(PATH .. ".list")
 local Utils = require(PATH .. ".utils")
 
-local World = {ENABLE_OPTIMIZATION = true}
+local World = {}
 
 World.__mt = {__index = World}
 
@@ -22,26 +22,20 @@ function World.new()
         __systems = List(),
 
         __events = {},
-        __emitSDepth = 0,
+        __emit_sdepth = 0,
 
         __added = List(),
-        __backAdded = List(),
+        __back_added = List(),
         __removed = List(),
-        __backRemoved = List(),
+        __back_removed = List(),
         __dirty = List(),
-        __backDirty = List(),
+        __back_dirty = List(),
 
-        __systemLookup = {},
+        __system_lookup = {},
 
         __name = nil,
-        __isWorld = true
+        __is_world = true
     }, World.__mt)
-
-    -- Optimization: We deep copy the World class into our instance of a world.
-    -- This grants slightly faster access times at the cost of memory.
-    -- Since there (generally) won't be many instances of worlds this is a
-    -- worthwhile tradeoff
-    if (World.ENABLE_OPTIMIZATION) then Utils.shallowCopy(World, world) end
 
     return world
 end
@@ -89,101 +83,101 @@ function World:__dirtyEntity(e)
     if not self.__dirty:has(e) then self.__dirty:add(e) end
 end
 
+local function swapEntityBuffers(world)
+    world.__added, world.__back_added = world.__back_added, world.__added
+
+    world.__removed, world.__back_removed = world.__back_removed,
+                                            world.__removed
+
+    world.__dirty, world.__back_dirty = world.__back_dirty, world.__dirty
+end
+
+local function processBuffer(world, buffer, process)
+    local entity_buffer = world[buffer]
+
+    for i = 1, entity_buffer.size do
+        local entity = entity_buffer[i]
+        if entity.__world == world then process(entity, world) end
+    end
+
+    entity_buffer:clear()
+end
+
 -- Internal: Flushes all changes to Entities.
 -- This processes all entities. Adding and removing entities,
 -- as well as reevaluating dirty entities.
 -- @treturn World self
 function World:__flush()
-    -- Early out
     if (self.__added.size == 0 and self.__removed.size == 0 and
         self.__dirty.size == 0) then return self end
 
-    -- Switch buffers
-    self.__added, self.__backAdded = self.__backAdded, self.__added
-    self.__removed, self.__backRemoved = self.__backRemoved, self.__removed
-    self.__dirty, self.__backDirty = self.__backDirty, self.__dirty
+    swapEntityBuffers(self)
 
-    local e
+    processBuffer(self, "__back_added", function(entity, world)
+        world.__entities:add(entity)
 
-    -- Process added entities
-    for i = 1, self.__backAdded.size do
-        e = self.__backAdded[i]
-
-        if e.__world == self then
-            self.__entities:add(e)
-
-            for j = 1, self.__systems.size do
-                self.__systems[j]:__evaluate(e)
-            end
-
-            self:onEntityAdded(e)
+        for j = 1, world.__systems.size do
+            world.__systems[j]:__evaluate(entity)
         end
-    end
-    self.__backAdded:clear()
 
-    -- Process removed entities
-    for i = 1, self.__backRemoved.size do
-        e = self.__backRemoved[i]
+        world:onEntityAdded(entity)
+    end)
 
-        if e.__world == self then
-            e.__world = nil
-            self.__entities:remove(e)
+    processBuffer(self, "__back_removed", function(entity, world)
+        entity.__world = nil
+        world.__entities:remove(entity)
 
-            for j = 1, self.__systems.size do
-                self.__systems[j]:__remove(e)
-            end
-
-            self:onEntityRemoved(e)
+        for j = 1, self.__systems.size do
+            world.__systems[j]:__remove(entity)
         end
-    end
-    self.__backRemoved:clear()
 
-    -- Process dirty entities
-    for i = 1, self.__backDirty.size do
-        e = self.__backDirty[i]
+        world:onEntityRemoved(entity)
+    end)
 
-        if e.__world == self then
-            for j = 1, self.__systems.size do
-                self.__systems[j]:__evaluate(e)
-            end
+    processBuffer(self, "__back_dirty", function(entity, world)
+        for j = 1, world.__systems.size do
+            world.__systems[j]:__evaluate(entity)
         end
-    end
-    self.__backDirty:clear()
+    end)
 
     return self
 end
 
 -- These functions won't be seen as callbacks that will be emitted to.
-local blacklistedSystemFunctions = {"init", "onEnabled", "onDisabled"}
+local blacklisted_system_functions = {"init", "onEnabled", "onDisabled"}
 
-local tryAddSystem = function(world, systemClass)
-    if (not Type.isSystemClass(systemClass)) then
-        return false, "SystemClass expected, got " .. type(systemClass)
+local function updateListeners(world, callback_name, system, callback)
+    -- Skip callback if its blacklisted
+    if blacklisted_system_functions[callback_name] then return end
+
+    -- Make container for all listeners of the
+    -- callback if it does not exist yet
+    if (not world.__events[callback_name]) then
+        world.__events[callback_name] = {}
     end
 
-    if (world.__systemLookup[systemClass]) then
+    -- Add callback to listeners
+    local listeners = world.__events[callback_name]
+    listeners[#listeners + 1] = {system = system, callback = callback}
+end
+
+local function tryAddSystem(world, system_class)
+    if (not Type.isSystemClass(system_class)) then
+        return false, "SystemClass expected, got " .. type(system_class)
+    end
+
+    if (world.__system_lookup[system_class.__id]) then
         return false, "SystemClass was already added to World"
     end
 
     -- Create instance of system
-    local system = systemClass(world)
+    local system = system_class(world)
 
-    world.__systemLookup[systemClass] = system
+    world.__system_lookup[system_class.__id] = system
     world.__systems:add(system)
 
-    for callbackName, callback in pairs(systemClass) do
-        -- Skip callback if its blacklisted
-        if (not blacklistedSystemFunctions[callbackName]) then
-            -- Make container for all listeners of the
-            -- callback if it does not exist yet
-            if (not world.__events[callbackName]) then
-                world.__events[callbackName] = {}
-            end
-
-            -- Add callback to listeners
-            local listeners = world.__events[callbackName]
-            listeners[#listeners + 1] = {system = system, callback = callback}
-        end
+    for callback_name, callback in pairs(system_class) do
+        updateListeners(world, callback_name, system, callback)
     end
 
     -- Evaluate all existing entities
@@ -217,15 +211,7 @@ end
 -- @param ... SystemClasses of Systems to add
 -- @treturn World self
 function World:addSystems(...)
-    for i = 1, select("#", ...) do
-        local systemClass = select(i, ...)
-
-        local ok, err = tryAddSystem(self, systemClass)
-        if not ok then
-            error("bad argument #" .. i .. " to 'World:addSystems' (" .. err ..
-                      ")", 2)
-        end
-    end
+    for i = 1, select("#", ...) do self:addSystem(select(i, ...)) end
 
     return self
 end
@@ -233,14 +219,14 @@ end
 --- Returns if the World has a System.
 -- @tparam System systemClass SystemClass of System to check for
 -- @treturn boolean
-function World:hasSystem(systemClass)
-    if not Type.isSystemClass(systemClass) then
+function World:hasSystem(system_class)
+    if not Type.isSystemClass(system_class) then
         error(
-            "bad argument #1 to 'World:getSystem' (systemClass expected, got " ..
-                type(systemClass) .. ")", 2)
+            "bad argument #1 to 'World:getSystem' (SystemClass expected, got " ..
+                type(system_class) .. ")", 2)
     end
 
-    return self.__systemLookup[systemClass] and true or false
+    return self.__system_lookup[system_class.__id] and true or false
 end
 
 --- Gets a System from the World.
@@ -249,11 +235,11 @@ end
 function World:getSystem(systemClass)
     if not Type.isSystemClass(systemClass) then
         error(
-            "bad argument #1 to 'World:getSystem' (systemClass expected, got " ..
+            "bad argument #1 to 'World:getSystem' (SystemClass expected, got " ..
                 type(systemClass) .. ")", 2)
     end
 
-    return self.__systemLookup[systemClass]
+    return self.__system_lookup[systemClass.__id]
 end
 
 --- Emits a callback in the World.
@@ -261,31 +247,31 @@ end
 -- @string functionName Name of functions to call.
 -- @param ... Parameters passed to System's functions
 -- @treturn World self
-function World:emit(functionName, ...)
-    if not functionName or type(functionName) ~= "string" then
+function World:emit(function_name, ...)
+    if not function_name or type(function_name) ~= "string" then
         error("bad argument #1 to 'World:emit' (String expected, got " ..
-                  type(functionName) .. ")")
+                  type(function_name) .. ")")
     end
 
-    local shouldFlush = self.__emitSDepth == 0
+    local should_flush = self.__emit_sdepth == 0
 
-    self.__emitSDepth = self.__emitSDepth + 1
+    self.__emit_sdepth = self.__emit_sdepth + 1
 
-    local listeners = self.__events[functionName]
+    local listeners = self.__events[function_name]
 
-    if listeners then
-        for i = 1, #listeners do
-            local listener = listeners[i]
+    if not listeners then return self end
 
-            if (listener.system.__enabled) then
-                if (shouldFlush) then self:__flush() end
+    for i = 1, #listeners do
+        local listener = listeners[i]
 
-                listener.callback(listener.system, ...)
-            end
+        if (listener.system.__enabled) then
+            if (should_flush) then self:__flush() end
+
+            listener.callback(listener.system, ...)
         end
     end
 
-    self.__emitSDepth = self.__emitSDepth - 1
+    self.__emit_sdepth = self.__emit_sdepth - 1
 
     return self
 end
@@ -295,10 +281,8 @@ end
 function World:clear()
     for i = 1, self.__entities.size do self:removeEntity(self.__entities[i]) end
 
-    for i = 1, self.__added.size do
-        local e = self.__added[i]
-        e.__world = nil
-    end
+    for i = 1, self.__added.size do self.__added[i].__world = nil end
+
     self.__added:clear()
 
     self:__flush()
@@ -306,9 +290,13 @@ function World:clear()
     return self
 end
 
-function World:getEntities() return self.__entities end
+--- Returns a readonly list of all entities in the World
+-- @treturn World self
+function World:getEntities() return Utils.readOnly(self.__entities) end
 
-function World:getSystems() return self.__systems end
+--- Returns a readonly list of all systems in the World
+-- @treturn World self
+function World:getSystems() return Utils.readOnly(self.__systems) end
 
 function World:serialize()
     self:__flush()
@@ -316,11 +304,7 @@ function World:serialize()
     local data = {}
 
     for i = 1, self.__entities.size do
-        local entity = self.__entities[i]
-
-        local entityData = entity:serialize()
-
-        data[i] = entityData
+        data[i] = self.__entities[i]:serialize()
     end
 
     return data
@@ -329,14 +313,7 @@ end
 function World:deserialize(data, append)
     if (not append) then self:clear() end
 
-    for i = 1, #data do
-        local entityData = data[i]
-
-        local entity = Entity()
-        entity:deserialize(entityData)
-
-        self:addEntity(entity)
-    end
+    for i = 1, #data do self:addEntity(Entity():deserialize(data[i])) end
 
     self:__flush()
 end
@@ -359,4 +336,4 @@ end
 function World:onEntityRemoved(e) -- luacheck: ignore
 end
 
-return setmetatable(World, {__call = function(_) return World.new() end})
+return setmetatable(World, {__call = function() return World.new() end})
