@@ -110,8 +110,7 @@ drawSystem = System(system_id, system_name, {position, texture})
 
 function drawSystem:draw() -- Give it a draw function
     -- Iterate over all Entities that this System acts on
-    for _, i in #self.pool do
-        local entity = self.pool[i]
+    for _, entity in ipairs(self.pool) do
         -- Get the position Component of this Entity
         local position = entity:f_get(position_component_id)
         -- Get the texture Component of this Entity
@@ -181,7 +180,7 @@ When defining a `ComponentClass` you need to pass in an id, a name and usually a
 -- Create the position class with a populate function
 -- The component variable is the actual Component given to an Entity
 -- The x and y variables are values we pass in when we create the Component
-Concord.component(id, "position" function(component, x, y)
+Concord.component(id, "position", function(component, x, y)
     component.x = x or 0
     component.y = y or 0
 end)
@@ -214,7 +213,7 @@ my_entity:give(position_component_id, 100, 50)
 ```lua
 -- Retrieve a Component
 -- Entity:get can also be used as well, which is the "safe" version of Entity:f_get
--- Entity:f_get is preferred when you know for a fact that the entity will chave
+-- Entity:f_get is preferred when you know for a fact that the Entity will have
 -- the requested component
 local position = my_entity:f_get(position_component_id)
 
@@ -248,7 +247,7 @@ Entity:ensure(position_component_id, 0, 0) -- Wont do anything
 -- WARNING: Do not modify this table. It is read-only
 local all_components = my_entity:getComponents()
 
-for component_class, component in ipairs(all_components) do
+for _, component in ipairs(all_components) do
     -- Do stuff
 end
 ```
@@ -297,10 +296,8 @@ end
 -- Defining a function
 function my_system_class:update(dt)
     -- Iterate over all entities in the pool
-    for _, e in ipairs(self.pool)
+    for _, entity in ipairs(self.pool)
         -- Do something with the Components
-        e.position.x = e.position.x + e.velocity.x * dt
-        e.position.y = e.position.y + e.velocity.y * dt
     end
 end
 ```
@@ -540,7 +537,7 @@ function love.draw() world:emit("draw") end
 
 ## Contributors
 
-See https://github.com/Keyslam/Concord#contributors for original list of contributors
+See https://github.com/Keyslam/Concord#contributors for the original list of contributors
 
 ---
 
