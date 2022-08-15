@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+  </head>
+  <body>
+    <div id="container">
+      <div id="product">
+        <div id="product_logo"></div>
+        <div id="product_name">
+          <big><b></b></big>
+        </div>
+        <div id="product_description"></div>
+      </div>
+      <!-- id="product" -->
+
+      <div id="main">
+        <!-- Menu -->
+
+        <div id="navigation">
+          <br />
+          <h1>Concord</h1>
+
+          <ul>
+            <li><a href="../index.html">Index</a></li>
+          </ul>
+
+          <h2>Contents</h2>
+          <ul>
+            <li><a href="#Functions">Functions</a></li>
+          </ul>
+
+          <h2>Modules</h2>
+          <ul class="nowrap">
+            <li><a href="../modules/Components.html">Components</a></li>
+            <li><a href="../modules/entity.html">entity</a></li>
+            <li><a href="../modules/list.html">list</a></li>
+            <li><strong>pool</strong></li>
+            <li><a href="../modules/type.html">type</a></li>
+            <li><a href="../modules/utils.html">utils</a></li>
+            <li><a href="../modules/world.html">world</a></li>
+          </ul>
+          <h2>Classes</h2>
+          <ul class="nowrap">
+            <li><a href="../classes/Component.html">Component</a></li>
+            <li><a href="../classes/System.html">System</a></li>
+          </ul>
+        </div>
+
+        <div id="content">
+          <h1>Module <code>pool</code></h1>
+          <p>Creates a new Pool</p>
+          <p></p>
+
+          <h2><a href="#Functions">Functions</a></h2>
+          <table class="function_list">
+            <tr>
+              <td class="name" nowrap>
+                <a href="#Pool:eligible">Pool:eligible (entity)</a>
+              </td>
+              <td class="summary">
+                Checks if an Entity is eligible to be in the Pool
+              </td>
+            </tr>
+            <tr>
+              <td class="name" nowrap>
+                <a href="#Pool:evaluate">Pool:evaluate (entity)</a>
+              </td>
+              <td class="summary">
+                Evaluates whether an Entity should be added/removed from the
+                Pool
+              </td>
+            </tr>
+            <tr>
+              <td class="name" nowrap>
+                <a href="#Pool:getFilter">Pool:getFilter ()</a>
+              </td>
+              <td class="summary">
+                Gets a read-only version of the filter associated with the Pool
+              </td>
+            </tr>
+            <tr>
+              <td class="name" nowrap>
+                <a href="#Pool:onEntityAdded">Pool:onEntityAdded (entity)</a>
+              </td>
+              <td class="summary">
+                A callback used when an Entity is added to the Pool.
+              </td>
+            </tr>
+          </table>
+
+          <br />
+          <br />
+
+          <h2 class="section-header"><a name="Functions"></a>Functions</h2>
+
+          <dl class="function">
+            <dt>
+              <a name="Pool:eligible"></a>
+              <strong>Pool:eligible (entity)</strong>
+            </dt>
+            <dd>
+              Checks if an Entity is eligible to be in the Pool
+
+              <h3>Parameters:</h3>
+              <ul>
+                <li>
+                  <span class="parameter">entity</span>
+                  <span class="types"><span class="type">Entity</span></span>
+                  The entity to inspect
+                </li>
+              </ul>
+
+              <h3>Returns:</h3>
+              <ol>
+                <span class="types"><span class="type">boolean</span></span>
+              </ol>
+            </dd>
+            <dt>
+              <a name="Pool:evaluate"></a>
+              <strong>Pool:evaluate (entity)</strong>
+            </dt>
+            <dd>
+              Evaluates whether an Entity should be added/removed from the Pool
+
+              <h3>Parameters:</h3>
+              <ul>
+                <li>
+                  <span class="parameter">entity</span>
+                  <span class="types"><span class="type">Entity</span></span>
+                  The Entity to be inspected
+                </li>
+              </ul>
+
+              <h3>Returns:</h3>
+              <ol>
+                <span class="types"><span class="type">Pool</span></span>
+                self
+              </ol>
+            </dd>
+            <dt>
+              <a name="Pool:getFilter"></a>
+              <strong>Pool:getFilter ()</strong>
+            </dt>
+            <dd>
+              Gets a read-only version of the filter associated with the Pool
+
+              <h3>Returns:</h3>
+              <ol>
+                <span class="types"
+                  ><a
+                    class="type"
+                    href="https://www.lua.org/manual/5.2/manual.html#6.5"
+                    >table</a
+                  ></span
+                >
+              </ol>
+            </dd>
+            <dt>
+              <a name="Pool:onEntityAdded"></a>
+              <strong>Pool:onEntityAdded (entity)</strong>
+            </dt>
+            <dd>
+              A callback used when an Entity is added to the Pool.
+
+              <h3>Parameters:</h3>
+              <ul>
+                <li>
+                  <span class="parameter">entity</span>
+                  <span class="types"><span class="type">Entity</span></span>
+                  The entity that was added.
+                </li>
+              </ul>
+            </dd>
+          </dl>
+        </div>
+        <!-- id="content" -->
+      </div>
+      <!-- id="main" -->
+      <div id="about">
+        <i
+          >generated by
+          <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i
+        >
+        <i style="float: right">Last updated 2022-08-14 21:20:49 </i>
+      </div>
+      <!-- id="about" -->
+    </div>
+    <!-- id="container" -->
+  </body>
+</html>
