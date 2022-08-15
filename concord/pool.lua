@@ -1,5 +1,4 @@
--- Used to iterate over Entities with a specific Components
--- A Pool contain a any amount of Entities.
+--- A grouping of Entities with certain Components as depicted by a filter
 -- @classmod Pool
 local PATH = (...):gsub('%.[^%.]+$', '')
 
@@ -11,9 +10,8 @@ local Pool = {}
 Pool.__mt = {__index = Pool}
 
 --- Creates a new Pool
--- @string name Name for the Pool.
--- @tparam table filter Table containing the required BaseComponents
--- @treturn Pool The new Pool
+-- @tparam table filter The table containing the required component ids
+-- @treturn Pool The newly created Pool
 function Pool.new(filter)
     local pool = setmetatable(List(), Pool.__mt)
 
@@ -24,71 +22,72 @@ function Pool.new(filter)
     return pool
 end
 
---- Checks if an Entity is eligible for the Pool.
--- @tparam Entity e Entity to check
+--- Checks if an Entity is eligible to be in the Pool
+-- @tparam Entity entity The entity to inspect
 -- @treturn boolean
-function Pool:eligible(e)
+function Pool:eligible(entity)
     for i = #self.__filter, 1, -1 do
         local component_id = self.__filter[i].__id
 
-        if not e.__components[component_id] then return false end
+        if not entity.__components[component_id] then return false end
     end
 
     return true
 end
 
--- Adds an Entity to the Pool, if it can be eligible.
--- @param e Entity to add
+-- Adds an Entity to the Pool, if it is eligble @see Pool:eligble
+-- @tparam Entity entity The Entity to be added
+-- @bool bypass Instructs whether to bypass the eligibility check
 -- @treturn Pool self
 -- @treturn boolean Whether the entity was added or not
-function Pool:add(e, bypass)
-    if not bypass and not self:eligible(e) then return self, false end
+function Pool:add(entity, bypass)
+    if not bypass and not self:eligible(entity) then return self, false end
 
-    List.add(self, e)
-    self:onEntityAdded(e)
+    List.add(self, entity)
+    self:onEntityAdded(entity)
 
     return self, true
 end
 
--- Remove an Entity from the Pool.
--- @param e Entity to remove
+-- Removes an Entity from the Pool.
+-- @tparam Entity entity The entity to remove
 -- @treturn Pool self
-function Pool:remove(e)
-    List.remove(self, e)
-    self:onEntityRemoved(e)
+function Pool:remove(entity)
+    List.remove(self, entity)
+    self:onEntityRemoved(entity)
 
     return self
 end
 
---- Evaluate whether an Entity should be added or removed from the Pool.
--- @param e Entity to add or remove
+--- Evaluates whether an Entity should be added/removed from the Pool
+-- @tparam Entity entity The Entity to be inspected
 -- @treturn Pool self
-function Pool:evaluate(e)
-    local has = self:has(e)
-    local eligible = self:eligible(e)
+function Pool:evaluate(entity)
+    local has = self:has(entity)
+    local eligible = self:eligible(entity)
 
     if not has and eligible then
-        self:add(e, true) -- Bypass the check cause we already checked
+        -- Bypass the check because we have already checked
+        self:add(entity, true)
     elseif has and not eligible then
-        self:remove(e)
+        self:remove(entity)
     end
 
     return self
 end
 
---- Gets the filter of the Pool.
--- Warning: Do not modify this filter.
--- @return Filter of the Pool.
+--- Gets a read-only version of the filter associated with the Pool
+-- @treturn table
 function Pool:getFilter() return Utils.readOnly(self.__filter) end
 
---- Callback for when an Entity is added to the Pool.
--- @tparam Entity e Entity that was added.
-function Pool:onEntityAdded(e) -- luacheck: ignore
+--- A callback used when an Entity is added to the Pool.
+-- @tparam Entity entity The entity that was added.
+function Pool:onEntityAdded(entity) -- luacheck: ignore
 end
 
--- Callback for when an Entity is removed from the Pool.
--- @tparam Entity e Entity that was removed.
-function Pool:onEntityRemoved(e) -- luacheck: ignore
+-- A callback used when an Entity is removed from the Pool.
+-- @tparam Entity entity The entity that was removed.
+function Pool:onEntityRemoved(entity) -- luacheck: ignore
 end
 
 return setmetatable(Pool, {

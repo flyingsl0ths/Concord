@@ -1,5 +1,5 @@
--- An object that exists in a world. An entity
--- contains components which are processed by systems.
+--- An object that exists in a world. An entity
+-- contains Components which are processed by Systems.
 -- @classmod Entity
 local PATH = (...):gsub('%.[^%.]+$', '')
 
@@ -11,8 +11,8 @@ local Entity = {}
 
 Entity.__mt = {__index = Entity}
 
---- Creates a new Entity. Optionally adds it to a World.
--- @tparam[opt] World world World to add the entity to
+--- Creates a new Entity (and optionally adds it to a World)
+-- @tparam[opt] World world The world to add the entity to
 -- @treturn Entity A new Entity
 function Entity.new(world)
     if (world ~= nil and not Type.isWorld(world)) then
@@ -41,8 +41,8 @@ end
 
 --- Gives an Entity a Component.
 -- If the Component already exists, it's overridden by this new Component
--- @tparam Component componentClass ComponentClass to add an instance of
--- @param ... additional arguments to pass to the Component's populate function
+-- @number component_id The id of the component to give
+-- @param ... Additional arguments to pass to the Component's populate function
 -- @treturn Entity self
 function Entity:give(component_id, ...)
     local ok, component_class = Components.try(component_id)
@@ -57,9 +57,9 @@ function Entity:give(component_id, ...)
     return give(self, component_id, component_class, ...)
 end
 
---- Ensures an Entity to have a Component.
--- If the Component already exists, no action is taken
--- @tparam Component componentClass ComponentClass to add an instance of
+--- Ensures the Entity does not already have the requested Component before
+-- adding an instance to it
+-- @number component_id The id of the CompnentClass to create an instance of
 -- @param ... additional arguments to pass to the Component's populate function
 -- @treturn Entity self
 function Entity:ensure(component_id, ...)
@@ -78,7 +78,7 @@ function Entity:ensure(component_id, ...)
 end
 
 --- Removes a Component from an Entity.
--- @tparam Component componentClass ComponentClass of the Component to remove
+-- @number component_id The id of the ComponentClass of the Component to remove
 -- @treturn Entity self
 function Entity:remove(component_id)
     local ok, component_class = Components.try(component_id)
@@ -99,7 +99,7 @@ function Entity:remove(component_id)
 end
 
 --- Assembles an Entity.
--- @tparam function assemblage Function that will assemble an entity
+-- @tparam function assemblage A function that will assemble an entity
 -- @param ... additional arguments to pass to the assemblage function.
 -- @treturn Entity self
 function Entity:assemble(assemblage, ...)
@@ -113,25 +113,25 @@ function Entity:assemble(assemblage, ...)
     return self
 end
 
---- Destroys the Entity.
--- Removes the Entity from its World if it's in one.
--- @return self
+--- Removes the Entity from its World if it's attached to one
+-- @treturn Entity self
 function Entity:destroy()
     if self.__world then self.__world:removeEntity(self) end
 
     return self
 end
 
--- Internal: Tells the World it's in that this Entity is dirty.
--- @return self
+--- Internal: Informs the World it's in (if any) that this
+-- Entity is marked as "dirty"
+-- @treturn Entity self
 function Entity:__dirty()
     if self.__world then self.__world:__dirtyEntity(self) end
 
     return self
 end
 
---- Returns true if the Entity has a Component.
--- @tparam Component componentClass ComponentClass of the Component to check
+--- Returns true if the Entity has the requested Component
+-- @number component_id The id of the ComponentClass of the Component to check
 -- @treturn boolean
 function Entity:has(component_id)
     local ok, component_class = Components.try(component_id)
@@ -146,34 +146,41 @@ function Entity:has(component_id)
     return self.__components[component_id] and true or false
 end
 
---- Gets a Component from the Entity.
--- @tparam Component componentClass ComponentClass of the Component to get
--- @treturn table
-function Entity:get(component_id, skip_check)
+--- Gets a Component from the Entity and performs additional checks to
+-- ensure the compnent id is of the required type as well as
+-- if the ComponentClass exists
+-- @number component_id The id of the ComponentClass of the Component to get
+-- @treturn Component
+function Entity:get(component_id)
     local ok, component_class = Components.try(component_id)
 
-    if skip_check then
-        Utils.checkComponentAccess({
-            ok = ok,
-            component_class = component_class,
-            method_name = "Entity:get",
-            component_id = component_id
-        })
-    end
+    Utils.checkComponentAccess({
+        ok = ok,
+        component_class = component_class,
+        method_name = "Entity:get",
+        component_id = component_id
+    })
 
     return self.__components[component_id]
 end
 
+--- Gets the Component from the Entity directly.
+-- This performs no checks unlike
+-- @see Entity:get
+-- @number component_id The assigned id of the of the Component to get
+-- @treturn Component
+function Entity:f_get(component_id) return self.__components[component_id] end
+
 --- Returns a read-only table of all Components the Entity has.
--- @treturn table Table of all Components the Entity has
+-- @treturn table
 function Entity:getComponents() return Utils.readOnly(self.__components) end
 
---- Returns true if the Entity is in a World.
+--- Returns true if the Entity is in a World
 -- @treturn boolean
 function Entity:inWorld() return self.__world and true or false end
 
---- Returns the World the Entity is in.
--- @treturn World
+--- Returns the World the Entity is in
+-- @treturn[opt] World
 function Entity:getWorld() return self.__world end
 
 local function serializeComponent(component)
@@ -187,6 +194,9 @@ local function serializeComponent(component)
     return component_data
 end
 
+--- Calls Component:serialize on all Components associated
+-- with this Entity and returns the results
+-- @treturn table
 function Entity:serialize()
     local data = {}
 
@@ -228,12 +238,14 @@ local function onDeserialization(entity, component_id, component_data)
     entity:__dirty()
 end
 
-function Entity:deserialize(data)
-    for i = 1, #data do
-        local current = data[i]
-        local data_id = onPreDeserialization(current)
-
-        onDeserialization(self, data_id, current)
+--- Restores an Entity to the state depicted by the given serialized data
+-- @tparam table components_data The serialized data
+-- @see Entity:serialize
+-- @treturn Entity self
+function Entity:deserialize(components_data)
+    for _, component_data in ipairs(components_data) do
+        onDeserialization(self, onPreDeserialization(component_data),
+                          component_data)
     end
 
     return self

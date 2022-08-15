@@ -1,20 +1,20 @@
---- Container for registered ComponentClasses
+--- A Container for registered ComponentClasses
 -- @module Components
 local Components = {}
 
 --- Returns true if the containter has the ComponentClass with
--- the specified name
--- @string name Name of the ComponentClass to check
+-- the specified id
+-- @number component_id The assigned id of the ComponentClass to search for
 -- @treturn boolean
 function Components.has(component_id)
     return rawget(Components, component_id) and true or false
 end
 
---- Returns true and the ComponentClass if one was registered with the specified
--- name or false and an error otherwise
--- @string name Name of the ComponentClass to check
+--- Returns the status of the retrieval and the ComponentClass if one was
+-- registered with the specified id
+-- @number component_id The assigned id of the ComponentClass to search for
 -- @treturn boolean
--- @treturn Component or error string
+-- @treturn ?Component
 function Components.try(component_id)
     if type(component_id) ~= "number" then return false, nil end
 
@@ -23,13 +23,16 @@ function Components.try(component_id)
     return true, value
 end
 
---- Returns the ComponentClass with the specified name
--- @string name Name of the ComponentClass to get
+--- Returns the ComponentClass with the specified id or errors
+-- if not found
+-- @number component_id The assigned id of the ComponentClass to retrieve
 -- @treturn Component
 function Components.get(component_id)
     local ok, component = Components.try(component_id)
 
     if not ok then
+        error("Invalid argument to expected number got" .. type(component), 2)
+    elseif component == false then
         error("Component with id: " .. component_id .. " does not exist", 2)
     end
 

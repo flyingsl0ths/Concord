@@ -1,7 +1,7 @@
--- Iterates over Entities. From these Entities
--- its get Components and modify them.
--- A System contains 1 or more Pools.
--- A System is contained by 1 World.
+--- Represents a system that operates on a collection of Entities as specified
+-- by it's assigned filter
+-- A System contains only a single Pool.
+-- A System is contained by a single World.
 -- @classmod System
 local PATH = (...):gsub('%.[^%.]+$', '')
 
@@ -59,8 +59,10 @@ local validateFilter = function(base_filter)
 end
 
 --- Creates a new SystemClass.
--- @param table filters A table containing filters (name = {components...})
--- @treturn System A new SystemClass
+-- @number id The id used to by associated World
+-- @string name The name of the system
+-- @tparam table filter A table containing the ids of the allowable components
+-- @treturn System
 function System.new(id, name, filter)
     local system_class = setmetatable({
         __filter = validateFilter(filter),
@@ -81,21 +83,21 @@ function System.new(id, name, filter)
     return system_class
 end
 
--- Internal: Evaluates an Entity for all the System's Pools.
--- @param e The Entity to check
+-- Internal: Calls @see Pool:evaluate on the given Entity
+-- @tparam Entity entity The Entity to evaluate
 -- @treturn System self
-function System:__evaluate(e)
-    self.pool:evaluate(e)
+function System:__evaluate(entity)
+    self.pool:evaluate(entity)
     return self
 end
 
--- Internal: Removes an Entity from the System.
--- @param e The Entity to remove
+-- Internal: Removes an Entity from the System if possible.
+-- @tparam Entity entity The entity to remove
 -- @treturn System self
-function System:__remove(e)
+function System:__remove(entity)
     local pool = self.pool
 
-    if pool:has(e) then pool:remove(e) end
+    if pool:has(entity) then pool:remove(entity) end
 
     return self
 end
@@ -108,8 +110,8 @@ function System:__clear()
     return self
 end
 
---- Sets if the System is enabled
--- @tparam boolean enable
+--- Enables/disables the system
+-- @bool enable
 -- @treturn System self
 function System:setEnabled(enable)
     if (not self.__enabled and enable) then
@@ -123,12 +125,12 @@ function System:setEnabled(enable)
     return self
 end
 
---- Returns is the System is enabled
--- @treturn boolean
+--- Checks if the System is enabled
+-- @treturn bool
 function System:isEnabled() return self.__enabled end
 
 --- Returns the World the System is in.
--- @treturn World
+-- @treturn ?World
 function System:getWorld() return self.__world end
 
 --- Returns true if the System has a name.
@@ -142,16 +144,16 @@ function System:getName() return self.__name end
 --- Callbacks
 -- @section Callbacks
 
---- Callback for system initialization.
+--- Callback used during system initialization.
 -- @tparam World world The World the System was added to
 function System:init(world) -- luacheck: ignore
 end
 
---- Callback for when a System is enabled.
+--- Callback used for when a System is enabled.
 function System:onEnabled() -- luacheck: ignore
 end
 
---- Callback for when a System is disabled.
+--- Callback used for when a System is disabled.
 function System:onDisabled() -- luacheck: ignore
 end
 

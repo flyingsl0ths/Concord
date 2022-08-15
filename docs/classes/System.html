@@ -45,25 +45,25 @@
           <h2>Modules</h2>
           <ul class="nowrap">
             <li><a href="../modules/Components.html">Components</a></li>
-            <li><a href="../modules/Concord.html">Concord</a></li>
-            <li><a href="../modules/type.html">type</a></li>
-            <li><a href="../modules/utils.html">utils</a></li>
+            <li><a href="../modules/Type.html">Type</a></li>
+            <li><a href="../modules/Utils.html">Utils</a></li>
           </ul>
         </div>
 
         <div id="content">
           <h1>Class <code>System</code></h1>
-          <p>Iterates over Entities.</p>
           <p>
-            From these Entities its get Components and modify them. A System
-            contains 1 or more Pools. A System is contained by 1 World.
+            Represents a system that operates on a collection of Entities as
+            specified by it's assigned filter A System contains only a single
+            Pool.
           </p>
+          <p>A System is contained by a single World.</p>
 
           <h2><a href="#Methods">Methods</a></h2>
           <table class="function_list">
             <tr>
               <td class="name" nowrap>
-                <a href="#System:new">System:new (table)</a>
+                <a href="#System:new">System:new (id, name, filter)</a>
               </td>
               <td class="summary">Creates a new SystemClass.</td>
             </tr>
@@ -71,13 +71,13 @@
               <td class="name" nowrap>
                 <a href="#System:setEnabled">System:setEnabled (enable)</a>
               </td>
-              <td class="summary">Sets if the System is enabled</td>
+              <td class="summary">Enables/disables the system</td>
             </tr>
             <tr>
               <td class="name" nowrap>
                 <a href="#System:isEnabled">System:isEnabled ()</a>
               </td>
-              <td class="summary">Returns is the System is enabled</td>
+              <td class="summary">Checks if the System is enabled</td>
             </tr>
             <tr>
               <td class="name" nowrap>
@@ -104,19 +104,25 @@
               <td class="name" nowrap>
                 <a href="#System:init">System:init (world)</a>
               </td>
-              <td class="summary">Callback for system initialization.</td>
+              <td class="summary">
+                Callback used during system initialization.
+              </td>
             </tr>
             <tr>
               <td class="name" nowrap>
                 <a href="#System:onEnabled">System:onEnabled ()</a>
               </td>
-              <td class="summary">Callback for when a System is enabled.</td>
+              <td class="summary">
+                Callback used for when a System is enabled.
+              </td>
             </tr>
             <tr>
               <td class="name" nowrap>
                 <a href="#System:onDisabled">System:onDisabled ()</a>
               </td>
-              <td class="summary">Callback for when a System is disabled.</td>
+              <td class="summary">
+                Callback used for when a System is disabled.
+              </td>
             </tr>
           </table>
 
@@ -128,7 +134,7 @@
           <dl class="function">
             <dt>
               <a name="System:new"></a>
-              <strong>System:new (table)</strong>
+              <strong>System:new (id, name, filter)</strong>
             </dt>
             <dd>
               Creates a new SystemClass.
@@ -136,8 +142,31 @@
               <h3>Parameters:</h3>
               <ul>
                 <li>
-                  <span class="parameter">table</span>
-                  filters A table containing filters (name = {components...})
+                  <span class="parameter">id</span>
+                  <span class="types"><span class="type">number</span></span>
+                  The id used to by associated World
+                </li>
+                <li>
+                  <span class="parameter">name</span>
+                  <span class="types"
+                    ><a
+                      class="type"
+                      href="https://www.lua.org/manual/5.2/manual.html#6.4"
+                      >string</a
+                    ></span
+                  >
+                  The name of the system
+                </li>
+                <li>
+                  <span class="parameter">filter</span>
+                  <span class="types"
+                    ><a
+                      class="type"
+                      href="https://www.lua.org/manual/5.2/manual.html#6.5"
+                      >table</a
+                    ></span
+                  >
+                  A table containing the ids of the allowable components
                 </li>
               </ul>
 
@@ -148,7 +177,6 @@
                     >System</a
                   ></span
                 >
-                A new SystemClass
               </ol>
             </dd>
             <dt>
@@ -156,13 +184,13 @@
               <strong>System:setEnabled (enable)</strong>
             </dt>
             <dd>
-              Sets if the System is enabled
+              Enables/disables the system
 
               <h3>Parameters:</h3>
               <ul>
                 <li>
                   <span class="parameter">enable</span>
-                  <span class="types"><span class="type">boolean</span></span>
+                  <span class="types"><span class="type">bool</span></span>
                 </li>
               </ul>
 
@@ -181,11 +209,11 @@
               <strong>System:isEnabled ()</strong>
             </dt>
             <dd>
-              Returns is the System is enabled
+              Checks if the System is enabled
 
               <h3>Returns:</h3>
               <ol>
-                <span class="types"><span class="type">boolean</span></span>
+                <span class="types"><span class="type">bool</span></span>
               </ol>
             </dd>
             <dt>
@@ -198,7 +226,8 @@
               <h3>Returns:</h3>
               <ol>
                 <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
+                  >optional
+                  <a class="type" href="../classes/World.html#">World</a></span
                 >
               </ol>
             </dd>
@@ -226,7 +255,7 @@
                 <span class="types"
                   ><a
                     class="type"
-                    href="https://www.lua.org/manual/5.1/manual.html#5.4"
+                    href="https://www.lua.org/manual/5.2/manual.html#6.4"
                     >string</a
                   ></span
                 >
@@ -241,7 +270,7 @@
               <strong>System:init (world)</strong>
             </dt>
             <dd>
-              Callback for system initialization.
+              Callback used during system initialization.
 
               <h3>Parameters:</h3>
               <ul>
@@ -260,12 +289,12 @@
               <a name="System:onEnabled"></a>
               <strong>System:onEnabled ()</strong>
             </dt>
-            <dd>Callback for when a System is enabled.</dd>
+            <dd>Callback used for when a System is enabled.</dd>
             <dt>
               <a name="System:onDisabled"></a>
               <strong>System:onDisabled ()</strong>
             </dt>
-            <dd>Callback for when a System is disabled.</dd>
+            <dd>Callback used for when a System is disabled.</dd>
           </dl>
         </div>
         <!-- id="content" -->
@@ -276,7 +305,7 @@
           >generated by
           <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i
         >
-        <i style="float: right">Last updated 2020-08-18 15:20:32 </i>
+        <i style="float: right">Last updated 2022-08-14 22:24:10 </i>
       </div>
       <!-- id="about" -->
     </div>

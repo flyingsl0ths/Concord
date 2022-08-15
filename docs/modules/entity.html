@@ -29,42 +29,33 @@
 
           <h2>Contents</h2>
           <ul>
-            <li><a href="#Methods">Methods</a></li>
-            <li><a href="#Metamethods">Metamethods</a></li>
+            <li><a href="#Functions">Functions</a></li>
           </ul>
 
-          <h2>Classes</h2>
-          <ul class="nowrap">
-            <li><a href="../classes/Component.html">Component</a></li>
-            <li><strong>Entity</strong></li>
-            <li><a href="../classes/List.html">List</a></li>
-            <li><a href="../classes/Pool.html">Pool</a></li>
-            <li><a href="../classes/System.html">System</a></li>
-            <li><a href="../classes/World.html">World</a></li>
-          </ul>
           <h2>Modules</h2>
           <ul class="nowrap">
             <li><a href="../modules/Components.html">Components</a></li>
-            <li><a href="../modules/Type.html">Type</a></li>
-            <li><a href="../modules/Utils.html">Utils</a></li>
+            <li><strong>entity</strong></li>
+            <li><a href="../modules/list.html">list</a></li>
+            <li><a href="../modules/pool.html">pool</a></li>
+            <li><a href="../modules/type.html">type</a></li>
+            <li><a href="../modules/utils.html">utils</a></li>
+            <li><a href="../modules/world.html">world</a></li>
+          </ul>
+          <h2>Classes</h2>
+          <ul class="nowrap">
+            <li><a href="../classes/Component.html">Component</a></li>
+            <li><a href="../classes/System.html">System</a></li>
           </ul>
         </div>
 
         <div id="content">
-          <h1>Class <code>Entity</code></h1>
-          <p>An object that exists in a world.</p>
-          <p>An entity contains Components which are processed by Systems.</p>
+          <h1>Module <code>entity</code></h1>
+          <p>Creates a new Entity (and optionally adds it to a World)</p>
+          <p></p>
 
-          <h2><a href="#Methods">Methods</a></h2>
+          <h2><a href="#Functions">Functions</a></h2>
           <table class="function_list">
-            <tr>
-              <td class="name" nowrap>
-                <a href="#Entity:new">Entity:new ([world])</a>
-              </td>
-              <td class="summary">
-                Creates a new Entity (and optionally adds it to a World)
-              </td>
-            </tr>
             <tr>
               <td class="name" nowrap>
                 <a href="#Entity:give">Entity:give (component_id, ...)</a>
@@ -91,14 +82,6 @@
                 <a href="#Entity:assemble">Entity:assemble (assemblage, ...)</a>
               </td>
               <td class="summary">Assembles an Entity.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#Entity:destroy">Entity:destroy ()</a>
-              </td>
-              <td class="summary">
-                Removes the Entity from its World if it's attached to one
-              </td>
             </tr>
             <tr>
               <td class="name" nowrap>
@@ -151,8 +134,8 @@
                 <a href="#Entity:serialize">Entity:serialize ()</a>
               </td>
               <td class="summary">
-                Calls Component:serialize on all Components associated with this
-                Entity and returns the results
+                Calls @see Component:serialize on all Components associated with
+                this Entity and returns the results
               </td>
             </tr>
             <tr>
@@ -167,55 +150,13 @@
               </td>
             </tr>
           </table>
-          <h2><a href="#Metamethods">Metamethods</a></h2>
-          <table class="function_list">
-            <tr>
-              <td class="name" nowrap>
-                <a href="#Entity:__dirty">Entity:__dirty ()</a>
-              </td>
-              <td class="summary">
-                Internal: Informs the World it's in (if any) that this Entity is
-                marked as "dirty"
-              </td>
-            </tr>
-          </table>
 
           <br />
           <br />
 
-          <h2 class="section-header"><a name="Methods"></a>Methods</h2>
+          <h2 class="section-header"><a name="Functions"></a>Functions</h2>
 
           <dl class="function">
-            <dt>
-              <a name="Entity:new"></a>
-              <strong>Entity:new ([world])</strong>
-            </dt>
-            <dd>
-              Creates a new Entity (and optionally adds it to a World)
-
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">world</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/World.html#"
-                      >World</a
-                    ></span
-                  >
-                  The world to add the entity to (<em>optional</em>)
-                </li>
-              </ul>
-
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
-                A new Entity
-              </ol>
-            </dd>
             <dt>
               <a name="Entity:give"></a>
               <strong>Entity:give (component_id, ...)</strong>
@@ -240,11 +181,7 @@
 
               <h3>Returns:</h3>
               <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
+                <span class="types"><span class="type">Entity</span></span>
                 self
               </ol>
             </dd>
@@ -272,11 +209,7 @@
 
               <h3>Returns:</h3>
               <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
+                <span class="types"><span class="type">Entity</span></span>
                 self
               </ol>
             </dd>
@@ -298,11 +231,7 @@
 
               <h3>Returns:</h3>
               <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
+                <span class="types"><span class="type">Entity</span></span>
                 self
               </ol>
             </dd>
@@ -317,7 +246,7 @@
               <ul>
                 <li>
                   <span class="parameter">assemblage</span>
-                  <span class="types"><span class="type">function</span></span>
+                  <span class="types"><span class="type">func</span></span>
                   A function that will assemble an entity
                 </li>
                 <li>
@@ -328,28 +257,7 @@
 
               <h3>Returns:</h3>
               <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
-                self
-              </ol>
-            </dd>
-            <dt>
-              <a name="Entity:destroy"></a>
-              <strong>Entity:destroy ()</strong>
-            </dt>
-            <dd>
-              Removes the Entity from its World if it's attached to one
-
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
+                <span class="types"><span class="type">Entity</span></span>
                 self
               </ol>
             </dd>
@@ -395,8 +303,10 @@
               <h3>Returns:</h3>
               <ol>
                 <span class="types"
-                  ><a class="type" href="../classes/Component.html#"
-                    >Component</a
+                  ><a
+                    class="type"
+                    href="https://www.lua.org/manual/5.2/manual.html#6.5"
+                    >table</a
                   ></span
                 >
               </ol>
@@ -407,7 +317,7 @@
             </dt>
             <dd>
               Gets the Component from the Entity directly. This performs no
-              checks unlike
+              checks unlike @see Entity:get
 
               <h3>Parameters:</h3>
               <ul>
@@ -426,11 +336,6 @@
                   ></span
                 >
               </ol>
-
-              <h3>See also:</h3>
-              <ul>
-                <a href="../classes/Entity.html#Entity:get">Entity:get</a>
-              </ul>
             </dd>
             <dt>
               <a name="Entity:getComponents"></a>
@@ -471,9 +376,7 @@
 
               <h3>Returns:</h3>
               <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
+                <span class="types"><span class="type">World</span></span>
               </ol>
             </dd>
             <dt>
@@ -481,8 +384,8 @@
               <strong>Entity:serialize ()</strong>
             </dt>
             <dd>
-              Calls Component:serialize on all Components associated with this
-              Entity and returns the results
+              Calls @see Component:serialize on all Components associated with
+              this Entity and returns the results
 
               <h3>Returns:</h3>
               <ol>
@@ -507,53 +410,14 @@
               <ul>
                 <li>
                   <span class="parameter">components_data</span>
-                  <span class="types"
-                    ><a
-                      class="type"
-                      href="https://www.lua.org/manual/5.2/manual.html#6.5"
-                      >table</a
-                    ></span
-                  >
-                  The serialized data
+                  <span class="types"><span class="type">tab</span></span>
+                  The data obtained via a call to @see Entity:serialize
                 </li>
               </ul>
 
               <h3>Returns:</h3>
               <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
-                self
-              </ol>
-
-              <h3>See also:</h3>
-              <ul>
-                <a href="../classes/Entity.html#Entity:serialize"
-                  >Entity:serialize</a
-                >
-              </ul>
-            </dd>
-          </dl>
-          <h2 class="section-header"><a name="Metamethods"></a>Metamethods</h2>
-
-          <dl class="function">
-            <dt>
-              <a name="Entity:__dirty"></a>
-              <strong>Entity:__dirty ()</strong>
-            </dt>
-            <dd>
-              Internal: Informs the World it's in (if any) that this Entity is
-              marked as "dirty"
-
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/Entity.html#"
-                    >Entity</a
-                  ></span
-                >
+                <span class="types"><span class="type">Entity</span></span>
                 self
               </ol>
             </dd>
@@ -567,7 +431,7 @@
           >generated by
           <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i
         >
-        <i style="float: right">Last updated 2022-08-14 22:24:10 </i>
+        <i style="float: right">Last updated 2022-08-14 21:20:49 </i>
       </div>
       <!-- id="about" -->
     </div>

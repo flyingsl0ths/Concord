@@ -37,9 +37,9 @@
             <li><a href="../modules/Components.html">Components</a></li>
             <li><a href="../modules/entity.html">entity</a></li>
             <li><a href="../modules/list.html">list</a></li>
-            <li><a href="../modules/pool.html">pool</a></li>
+            <li><strong>pool</strong></li>
             <li><a href="../modules/type.html">type</a></li>
-            <li><strong>utils</strong></li>
+            <li><a href="../modules/utils.html">utils</a></li>
             <li><a href="../modules/world.html">world</a></li>
           </ul>
           <h2>Classes</h2>
@@ -50,31 +50,43 @@
         </div>
 
         <div id="content">
-          <h1>Module <code>utils</code></h1>
-          <p>Creates a read-only instance of the given table</p>
+          <h1>Module <code>pool</code></h1>
+          <p>Creates a new Pool</p>
           <p></p>
 
           <h2><a href="#Functions">Functions</a></h2>
           <table class="function_list">
             <tr>
               <td class="name" nowrap>
-                <a href="#Utils.shallowCopy"
-                  >Utils.shallowCopy (source, destination)</a
-                >
+                <a href="#Pool:eligible">Pool:eligible (entity)</a>
               </td>
               <td class="summary">
-                Performs a shallow copy of the source table onto the destination
-                table
+                Checks if an Entity is eligible to be in the Pool
               </td>
             </tr>
             <tr>
               <td class="name" nowrap>
-                <a href="#Utils.loadNamespace"
-                  >Utils.loadNamespace (pathOrFiles, namespace)</a
-                >
+                <a href="#Pool:evaluate">Pool:evaluate (entity)</a>
               </td>
               <td class="summary">
-                Requires files and places the results in a table.
+                Evaluates whether an Entity should be added/removed from the
+                Pool
+              </td>
+            </tr>
+            <tr>
+              <td class="name" nowrap>
+                <a href="#Pool:getFilter">Pool:getFilter ()</a>
+              </td>
+              <td class="summary">
+                Gets a read-only version of the filter associated with the Pool
+              </td>
+            </tr>
+            <tr>
+              <td class="name" nowrap>
+                <a href="#Pool:onEntityAdded">Pool:onEntityAdded (entity)</a>
+              </td>
+              <td class="summary">
+                A callback used when an Entity is added to the Pool.
               </td>
             </tr>
           </table>
@@ -86,59 +98,54 @@
 
           <dl class="function">
             <dt>
-              <a name="Utils.shallowCopy"></a>
-              <strong>Utils.shallowCopy (source, destination)</strong>
+              <a name="Pool:eligible"></a>
+              <strong>Pool:eligible (entity)</strong>
             </dt>
             <dd>
-              Performs a shallow copy of the source table onto the destination
-              table
+              Checks if an Entity is eligible to be in the Pool
 
               <h3>Parameters:</h3>
               <ul>
                 <li>
-                  <span class="parameter">source</span>
-                  <span class="types"><span class="type">tab</span></span>
-                  The table to copy
-                </li>
-                <li>
-                  <span class="parameter">destination</span>
-                  <span class="types"><span class="type">tab</span></span>
-                  The table to append to
+                  <span class="parameter">entity</span>
+                  <span class="types"><span class="type">Entity</span></span>
+                  The entity to inspect
                 </li>
               </ul>
+
+              <h3>Returns:</h3>
+              <ol>
+                <span class="types"><span class="type">boolean</span></span>
+              </ol>
             </dd>
             <dt>
-              <a name="Utils.loadNamespace"></a>
-              <strong>Utils.loadNamespace (pathOrFiles, namespace)</strong>
+              <a name="Pool:evaluate"></a>
+              <strong>Pool:evaluate (entity)</strong>
             </dt>
             <dd>
-              Requires files and places the results in a table.
+              Evaluates whether an Entity should be added/removed from the Pool
 
               <h3>Parameters:</h3>
               <ul>
                 <li>
-                  <span class="parameter">pathOrFiles</span>
-                  <span class="types"
-                    ><a
-                      class="type"
-                      href="https://www.lua.org/manual/5.2/manual.html#6.4"
-                      >string</a
-                    >
-                    or
-                    <a
-                      class="type"
-                      href="https://www.lua.org/manual/5.2/manual.html#6.5"
-                      >table</a
-                    ></span
-                  >
-                  The table of paths or a path to a directory.
-                </li>
-                <li>
-                  <span class="parameter">namespace</span>
-                  <span class="types"><span class="type">tab</span></span>
-                  A table that will hold the required files
+                  <span class="parameter">entity</span>
+                  <span class="types"><span class="type">Entity</span></span>
+                  The Entity to be inspected
                 </li>
               </ul>
+
+              <h3>Returns:</h3>
+              <ol>
+                <span class="types"><span class="type">Pool</span></span>
+                self
+              </ol>
+            </dd>
+            <dt>
+              <a name="Pool:getFilter"></a>
+              <strong>Pool:getFilter ()</strong>
+            </dt>
+            <dd>
+              Gets a read-only version of the filter associated with the Pool
 
               <h3>Returns:</h3>
               <ol>
@@ -150,6 +157,22 @@
                   ></span
                 >
               </ol>
+            </dd>
+            <dt>
+              <a name="Pool:onEntityAdded"></a>
+              <strong>Pool:onEntityAdded (entity)</strong>
+            </dt>
+            <dd>
+              A callback used when an Entity is added to the Pool.
+
+              <h3>Parameters:</h3>
+              <ul>
+                <li>
+                  <span class="parameter">entity</span>
+                  <span class="types"><span class="type">Entity</span></span>
+                  The entity that was added.
+                </li>
+              </ul>
             </dd>
           </dl>
         </div>

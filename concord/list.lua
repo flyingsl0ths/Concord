@@ -1,12 +1,12 @@
--- Data structure that allows for fast removal
--- at the cost of containing order.
+--- A data structure that allows for fast removal
+-- at the cost of maintaining order.
 -- @classmod List
 local List = {}
 
 List.__mt = {__index = List}
 
 --- Creates a new List.
--- @treturn List A new List
+-- @treturn List
 function List.new() return setmetatable({size = 0}, List.__mt) end
 
 --- Adds an object to the List.
@@ -15,6 +15,8 @@ function List.new() return setmetatable({size = 0}, List.__mt) end
 -- @param obj Object to add
 -- @treturn List self
 function List:add(obj)
+    if type(obj) == "string" and obj == "size" then return self end
+
     local size = self.size + 1
 
     self[size] = obj
@@ -75,14 +77,14 @@ end
 -- @treturn boolean
 function List:has(obj) return self[obj] and true or false end
 
---- Returns the object at an index.
--- @number i Index to get from
+--- Returns the object at the given index.
+-- @number index Index to get from
 -- @return Object at the index
-function List:get(i) return self[i] end
+function List:get(index) return self[index] end
 
 --- Returns the index of an object in the List.
 -- @param obj Object to get index of
--- @treturn number index of object in the List.
+-- @treturn number
 function List:indexOf(obj)
     if (not self[obj]) then
         error("bad argument #1 to 'List:indexOf' (Object was not in List)", 2)
