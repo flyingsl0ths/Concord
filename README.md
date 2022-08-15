@@ -147,14 +147,14 @@ Concord does a few things that might not be immediately clear. This segment shou
 
 Since you'll have lots of Components and Systems in your game Concord makes it a bit easier to load things in.
 
-Loads all files in the directory, and puts the return value in the table Systems.
+`Utils.loadNamespace` loads all files in the directory, and puts the return value in the table `Systems`.
 The key is their filename without any extension
 
 ```lua
 local Systems = {}
 Concord.utils.loadNamespace("path/to/systems", Systems)
 
-print(Systems.system_name)
+print(Systems.filename)
 ```
 
 Components are automatically registered into `Concord.components`, so loading them into
@@ -173,7 +173,7 @@ my_world:addEntity(foo_entity):addEntity(bar_entity):clear():emit("test")
 
 ### Components
 
-When defining a `ComponentClass` you need to pass in an id, a name and usually a
+When defining a `ComponentClass` you need to pass in an id, a name, and usually a
 `populate` function. This will fill the Component with values.
 
 ```lua
@@ -195,13 +195,13 @@ Concord.component(id, "draw")
 
 Entities can be freely made and be given Components. You pass the name of the `ComponentClass` and the values you want to pass. It will then create the Component for you.
 
-Entities will contain a **single** instance of a `Component` and can not share a component.
+Entities will contain a **single** instance of a `Component` and can not share that instance
 
 ```lua
 -- Create a new Entity
 local my_entity = Entity()
 -- or
-local my_entity = Entity(my_world) -- To add it to a world immediately ( See World )
+local my_entity = Entity(my_world) -- Adds it to a world immediately ( See World )
 ```
 
 ```lua
@@ -221,7 +221,7 @@ print(position.x, position.y) -- 100, 50
 ```
 
 ```lua
--- Remove a Component
+-- Removing a Component
 myEntity:remove(component_id)
 ```
 
@@ -272,19 +272,19 @@ my_entity:destroy()
 
 ### Systems
 
-`Systems` are defined as a `SystemClass`. Concord will automatically create an instance of a System when it is needed.
+`Systems` are defined as a `SystemClass`. Concord will automatically create an instance of a `System` when it is needed.
 
-Systems get access to Entities through a `pool`, they are created using a filter.
+Systems get access to Entities through a `pool` and are created using a filter.
 Systems can only have a **single** pool.
 
 ```lua
 -- Creates a System with the entities that contain
--- the give components stored within the pool property
+-- the given components as stated by the filter
 local my_system_class = Concord.system(id, name, {component_ids})
 ```
 
 ```lua
--- If a System has a :init function it will be called on creation
+-- If a System has an :init function it will be called on creation
 
 -- world is the World the System was created for
 function my_system_class:init(world)
@@ -293,7 +293,7 @@ end
 ```
 
 ```lua
--- Defining a function
+-- Defining a callback (see World)
 function my_system_class:update(dt)
     -- Iterate over all entities in the pool
     for _, entity in ipairs(self.pool)
@@ -306,7 +306,6 @@ end
 -- Systems can be enabled and disabled
 -- When systems are disabled their callbacks won't be executed.
 -- Note that pools will still be updated
--- This is mainly useful for systems that display debug information
 -- Systems are enabled by default
 
 -- Enable a System
@@ -327,7 +326,7 @@ local world = system:getWorld()
 
 ### Worlds
 
-Worlds are the thing your System and Entities live in.
+Worlds are the thing your Systems and Entities live in.
 With Worlds you can `emit` a callback. All Systems with this callback will then be called.
 
 Worlds can have 1 instance of every `SystemClass`.
@@ -407,8 +406,8 @@ function animal(e, cuteness, legs)
     e:give(cuteness_component_id, cuteness):give(limbs_component_id, legs, 0) -- Variable amount of legs. 0 arm.
 end
 
--- Make an Assemblage that uses animal
--- cuteness is a variables passed in
+-- Assumble an Entity using the animal assemblage
+-- cuteness is a variable passed in
 function cat(e, cuteness)
     e:assemble(animal, cuteness * 2, 4) -- Cats are twice as cute, and have 4 legs.
     :give(sound_component_id, "meow.mp3")
@@ -416,7 +415,7 @@ end
 ```
 
 ```lua
--- Use an Assemblage
+-- Using an assemblage
 my_entity:assemble(cat, 100) -- 100 cuteness
 ```
 
