@@ -157,7 +157,7 @@ end
 function Entity:has(component_id)
     local ok, _ = Components.try(component_id)
 
-    if not ok then error("bad argument #1 to '" .. "Entity:has" .. "'", 2) end
+    if not ok then error("bad argument #1 to 'Entity:has'", 2) end
 
     return self.__components[component_id] and true or false
 end
