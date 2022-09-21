@@ -40,12 +40,12 @@ System.mt = {
 local function makeFilter(component_id, filter)
     local ok, component_class = Components.try(component_id)
 
-    Utils.checkComponentAccess({
-        method_name = "System.new",
-        throw_error = true,
-        ok = ok,
-        component_class = component_class
-    })
+    if not ok then error("bad argument #1 to 'System.makeFilter'", 2) end
+
+    if component_class == nil then
+        error("Component with the given id: " .. component_id ..
+                  " does not exist", 2)
+    end
 
     filter[#filter + 1] = component_class
 end

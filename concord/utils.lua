@@ -90,32 +90,4 @@ function Utils.loadNamespace(pathOrFiles, namespace)
     return namespace
 end
 
-local function onInvalidComponentClass(status)
-    local message = "Component with the given id: " .. status.component_id ..
-                        " does not exist"
-
-    if status.throw_error then
-        error(message, 2)
-    else
-        print(message)
-    end
-end
-
--- Checks if the component class was successfully retrieved and
--- if it exists @see Components.try
--- @tab status A table of the form
--- @bool ok The status of the retrieval
--- @string method_name The name of the method where the check occurred
--- @tparam Component
--- @bool throw_error Used to indicate whether to throw or print an error
-function Utils.checkComponentAccess(status)
-    local component_class = status.component_class
-
-    if not status.ok then
-        error("bad argument #1 to '" .. status.method_name .. "'", 2)
-    end
-
-    if component_class == nil then onInvalidComponentClass(status) end
-end
-
 return Utils

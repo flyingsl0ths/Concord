@@ -11,6 +11,25 @@ local Entity = {}
 
 Entity.__mt = {__index = Entity}
 
+local function checkComponentAccess(status)
+    local component_class = status.component_class
+
+    if not status.ok then
+        error("bad argument #1 to '" .. status.method_name .. "'", 2)
+    end
+
+    if component_class ~= nil then return end
+
+    local message = "Component with the given id: " .. status.component_id ..
+                        " does not exist"
+
+    if status.throw_error then
+        error(message, 2)
+    else
+        print(message)
+    end
+end
+
 --- Creates a new Entity (and optionally adds it to a World)
 -- @tparam[opt] World world The world to add the entity to
 -- @treturn Entity A new Entity
