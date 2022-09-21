@@ -4,7 +4,7 @@ Concord is a feature complete ECS for LÖVE.
 It's main focus is performance and ease of use.
 With Concord it is possibile to easily write fast and clean code.
 
-This readme will explain how to use Concord.
+This README explains how to use Concord.
 
 Additionally all of Concord is documented using the LDoc format.
 Auto generated docs for Concord can be found in `docs` folder, or on the [GitHub page](https://flyingsl0ths.github.io/Concord/).
@@ -31,7 +31,7 @@ Auto generated docs for Concord can be found in `docs` folder, or on the [GitHub
 
 ## Installation
 
-Download the repository and copy the 'Concord' folder into your project. Then require it in your project like so:
+Clone the repository or clone & copy the `concord` folder into your project. Then require it in your project like so:
 
 ```lua
 local Concord = require("path.to.concord")
@@ -40,13 +40,10 @@ local Concord = require("path.to.concord")
 Concord has a bunch of modules. These can be accessed through `Concord`:
 
 ```lua
--- Modules
 local Entity = Concord.entity
 local Component = Concord.component
 local System = Concord.system
 local World = Concord.world
-
--- Containers
 local Components = Concord.components
 ```
 
@@ -56,17 +53,16 @@ local Components = Concord.components
 
 Concord is an Entity Component System (ECS for short) library.
 This is a coding paradigm where _composition_ is used over _inheritance_.
-Because of this it is easier to write more modular code. It often allows you to combine any form of behaviour for the objects in your game (Entities).
+It's because of this, that is easier to write more modular code. This often allows you to combine any form of behavior for the objects in your game (Entities).
 
-As the name might suggest, ECS consists of 3 core things: Entities, Components, and Systems. A proper understanding of these is required to use Concord effectively.
-We'll start with the simplest one.
+As the name might suggest, ECS consists of 3 core things: Entities, Components, and Systems. A proper understanding of these is required to use Concord effectively. Let's start with the simplest one.
 
 ### Components
 
 Components are pure raw data. In Concord this is just a table with some fields.
 A position component might look like
 `{ x = 100, y = 50}`, whereas a health Component might look like `{ currentHealth = 10, maxHealth = 100 }`.
-What is most important is that Components are data and nothing more. They have 0 functionality.
+The important concept to understand here is that, **components are data and nothing more**. They have zero functionality.
 
 ### Entities
 
@@ -94,27 +90,27 @@ Whereas a player might have the following components:
 }
 ```
 
-Any Component can be given to any Entity (once). Which Components an Entity has will determine how it behaves. This is done through the last thing...
+Any Component can be given to any Entity (once). Which Components an Entity has will determine how it behaves. This is done through...
 
 ### Systems
 
 Systems are the things that actually _do_ stuff. They contain all your fancy algorithms and cool game logic.
 Each System will do one specific task like say, drawing Entities.
-For this they will only act on Entities that have the Components needed for this: `position` and `texture`. All other Components are irrelevant.
+For this they will only act on Entities that have the Components needed for this, such as `position` and `texture`. All other Components are irrelevant to this system.
 
 In Concord this is done something alike this:
 
 ```lua
 -- Defines a System with an id, name, and that takes all Entities with a position and texture Component
-drawSystem = System(system_id, system_name, {position, texture})
+DrawSystem = System(system_id, system_name, {position, texture})
 
-function drawSystem:draw() -- Give it a draw function
+function DrawSystem:draw() -- Give it a draw function
     -- Iterate over all Entities that this System acts on
     for _, entity in ipairs(self.pool) do
         -- Get the position Component of this Entity
-        local position = entity:f_get(position_component_id)
+        local position = entity:get(position_component)
         -- Get the texture Component of this Entity
-        local texture = entity:f_get(texture_component_id)
+        local texture = entity:get(texture_component)
 
         -- Draw the Entity
         love.graphics.draw(texture.image, position.x, position.y)
@@ -128,12 +124,10 @@ end
 - Entities contain any set of Components.
 - Systems act on Entities that have a required set of Components.
 
-By creating Components and Systems you create modular behaviour that can apply to any Entity.
-What if we took our crate from before and gave it the `controllable` Component? It would respond to our user input of course.
-
-Or what if the enemy shot bullets with a `health` Component? It would create bullets that we'd be able to destroy by shooting them.
-
-And all that without writing a single extra line of code. Just reusing code that already existed and is guaranteed to be reuseable.
+By creating Components & Systems you create modular behaviour that can apply to any Entity.
+What if we took our crate from before and gave it the `controllable` component? It would respond to our user input of course.
+Or what if the enemy shot bullets had a `health` component? It would create bullets that we'd be able to destroy by shooting them.
+All that without writing a single extra line of code, just reusing code that already existed and is guaranteed to be reuseable.
 
 ---
 
@@ -193,7 +187,7 @@ Concord.component(id, "draw")
 
 ### Entities
 
-Entities can be freely made and be given Components. You pass the name of the `ComponentClass` and the values you want to pass. It will then create the Component for you.
+Entities can be freely made and be given components. You pass the id of the `ComponentClass` and the values required by it, it will then create the Component for you for the given Entity
 
 Entities will contain a **single** instance of a `Component` and can not share that instance
 
@@ -212,22 +206,23 @@ my_entity:give(position_component_id, 100, 50)
 
 ```lua
 -- Retrieve a Component
--- Entity:get can also be used as well, which is the "safe" version of Entity:f_get
--- Entity:f_get is preferred when you know for a fact that the Entity will have
+-- Entity:get_s can also be used as well, which is the "safe" version of Entity:get
+-- Entity:get is preferred when you know for a fact that the Entity will have
 -- the requested component
-local position = my_entity:f_get(position_component_id)
+local position = my_entity:get(position_component_id)
 
 print(position.x, position.y) -- 100, 50
 ```
 
 ```lua
--- Removing a Component
+-- Removes a Component if it exists
 myEntity:remove(component_id)
 ```
 
 ```lua
 -- Entity:give will override a Component if the Entity already has it
 -- Entity:ensure will only put the Component if the Entity does not already have it
+-- both throw errors is the component represented by the given id does not exist
 
 Entity:ensure(position_component_id, 0, 0) -- Will give
 -- Position is {x = 0, y = 0}
@@ -253,7 +248,7 @@ end
 ```
 
 ```lua
--- Assemble the Entity ( See Assemblages )
+-- Assembling an Entity ( See Assemblages )
 my_entity:assemble(assemblage_function, 100, true, "foo")
 ```
 
@@ -305,7 +300,7 @@ end
 ```lua
 -- Systems can be enabled and disabled
 -- When systems are disabled their callbacks won't be executed.
--- Note that pools will still be updated
+-- Note that their pools will still be updated
 -- Systems are enabled by default
 
 -- Enable a System
@@ -364,7 +359,7 @@ local my_system = myWorld:getSystem(my_system_class)
 ```lua
 -- Emit an event
 
--- This will call the 'update' function of all added Systems if they have one
+-- This will call the 'update' function of all added Systems (if they have one)
 -- They will be called in the order they were added
 my_world:emit("update", dt)
 
@@ -426,7 +421,8 @@ my_entity:assemble(cat, 100) -- 100 cuteness
 ```lua
 local Concord = require("concord")
 
-local ComponentIds = Concord.utils.readOnly({
+
+
     POSITION = 1,
     VELOCITY = 2,
     DRAWABLE = 3,
@@ -456,7 +452,7 @@ local PlayerInputSystem = Concord.system(SystemIds.PLAYER_INPUT, "player_input",
 
 function PlayerInputSystem:update()
     local e = self.pool[1]
-    local velocity_component = e:f_get(ComponentIds.VELOCITY)
+    local velocity_component = e:get(ComponentIds.VELOCITY)
 
     if love.keyboard.isDown("left") then
         if velocity_component.x >= 0 then
@@ -466,18 +462,18 @@ function PlayerInputSystem:update()
 
     if love.keyboard.isDown("right") then
         if velocity_component.x < 0 then
-            velocity_component.x = velocity_component.x * -1
+            velocity_component.x = -velocity_component.x
         end
     end
 
     if love.keyboard.isDown("up") then
-        if velocity_component.y < 0 then
-            velocity_component.y = velocity_component.y * -1
+        if velocity_component.y >= 0 then
+            velocity_component.y = -velocity_component.y
         end
     end
 
     if love.keyboard.isDown("down") then
-        if velocity_component.y >= 0 then
+        if velocity_component.y < 0 then
             velocity_component.y = -velocity_component.y
         end
     end
@@ -489,8 +485,8 @@ local MoveSystem = Concord.system(SystemIds.MOVE, "move", {
 
 function MoveSystem:update(dt)
     local function onMove(entity)
-        local position_component = entity:f_get(ComponentIds.POSITION)
-        local velocity_component = entity:f_get(ComponentIds.VELOCITY)
+        local position_component = entity:get(ComponentIds.POSITION)
+        local velocity_component = entity:get(ComponentIds.VELOCITY)
 
         local vx = velocity_component.x
         local vy = velocity_component.y
@@ -508,7 +504,7 @@ local DrawSystem = Concord.system(SystemIds.DRAW, "draw", {
 
 function DrawSystem:draw()
     for _, entity in ipairs(self.pool) do
-        local position_component = entity:f_get(ComponentIds.POSITION)
+        local position_component = entity:get(ComponentIds.POSITION)
 
         love.graphics.circle("fill", position_component.x, position_component.y,
                              20)
@@ -520,7 +516,7 @@ local world = Concord.world()
 world:addSystems(MoveSystem, PlayerInputSystem, DrawSystem)
 
 Concord.entity(world):give(ComponentIds.POSITION, 100, 100):give(
-    ComponentIds.VELOCITY, 100, 0):give(ComponentIds.DRAWABLE):give(
+    ComponentIds.VELOCITY, 100, 100):give(ComponentIds.DRAWABLE):give(
     ComponentIds.PLAYER_INPUT)
 
 Concord.entity(world):give(ComponentIds.POSITION, 120, 120):give(
