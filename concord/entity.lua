@@ -58,37 +58,43 @@ local function give(e, component_id, component_class, ...)
     return e:__dirty()
 end
 
---- Gives an Entity a Component.
--- If the Component already exists, it's overridden by this new Component
+--- Attempts to give an Entity a Component.
+-- If the Component already exists, it's overridden
+-- by this new Component.
+-- This performs similar checks as Entity:get
+-- @see Entity:get
 -- @number component_id The id of the component to give
 -- @param ... Additional arguments to pass to the Component's populate function
 -- @treturn Entity self
 function Entity:give(component_id, ...)
     local ok, component_class = Components.try(component_id)
 
-    Utils.checkComponentAccess({
+    checkComponentAccess({
         ok = ok,
         component_class = component_class,
         method_name = "Entity:give",
-        component_id = component_id
+        component_id = component_id,
+        throw_error = true
     })
 
     return give(self, component_id, component_class, ...)
 end
 
 --- Ensures the Entity does not already have the requested Component before
--- adding an instance to it
+-- adding an instance to it. This performs similar checks as Entity:get
+-- @see Entity:get
 -- @number component_id The id of the CompnentClass to create an instance of
 -- @param ... additional arguments to pass to the Component's populate function
 -- @treturn Entity self
 function Entity:ensure(component_id, ...)
     local ok, component_class = Components.try(component_id)
 
-    Utils.checkComponentAccess({
+    checkComponentAccess({
         ok = ok,
         component_class = component_class,
         method_name = "Entity:ensure",
-        component_id = component_id
+        component_id = component_id,
+        throw_error = true
     })
 
     if self.__components[component_id] then return self end
@@ -96,19 +102,13 @@ function Entity:ensure(component_id, ...)
     return give(self, component_id, component_class, ...)
 end
 
---- Removes a Component from an Entity.
+--- Attempts to remove a Component from an Entity.
+-- This performs similar checks as Entity:has
+-- @see Entity:has
 -- @number component_id The id of the ComponentClass of the Component to remove
 -- @treturn Entity self
 function Entity:remove(component_id)
-    local ok, component_class = Components.try(component_id)
-
-    Utils.checkComponentAccess({
-        ok = ok,
-        component_class = component_class,
-        method_name = "Entity:remove",
-        component_id = component_id,
-        throw_error = true
-    })
+    if not self:has(component_id) then return end
 
     if self.__components[component_id] == nil then return self end
 
@@ -149,46 +149,45 @@ function Entity:__dirty()
     return self
 end
 
---- Returns true if the Entity has the requested Component
+--- Returns true if the Entity has the requested Component.
+-- This will only error if the component id is not of the required
+-- type
 -- @number component_id The id of the ComponentClass of the Component to check
 -- @treturn boolean
 function Entity:has(component_id)
-    local ok, component_class = Components.try(component_id)
+    local ok, _ = Components.try(component_id)
 
-    Utils.checkComponentAccess({
-        ok = ok,
-        component_class = component_class,
-        method_name = "Entity:has",
-        component_id = component_id
-    })
+    if not ok then error("bad argument #1 to '" .. "Entity:has" .. "'", 2) end
 
     return self.__components[component_id] and true or false
 end
 
---- Gets a Component from the Entity and performs additional checks to
--- ensure the compnent id is of the required type as well as
--- if the ComponentClass exists
+--- Attempts to get a Component from the Entity and performs
+-- additional checks to ensure the component id is of the required
+-- type as well as if the ComponentClass exists
+-- (an error is thrown if it does not)
 -- @number component_id The id of the ComponentClass of the Component to get
 -- @treturn Component
-function Entity:get(component_id)
+function Entity:get_s(component_id)
     local ok, component_class = Components.try(component_id)
 
-    Utils.checkComponentAccess({
+    checkComponentAccess({
         ok = ok,
         component_class = component_class,
         method_name = "Entity:get",
-        component_id = component_id
+        component_id = component_id,
+        throw_error = true
     })
 
     return self.__components[component_id]
 end
 
---- Gets the Component from the Entity directly.
--- This performs no checks unlike
+--- Gets the Component from the Entity without
+-- performing any checks
 -- @see Entity:get
 -- @number component_id The assigned id of the of the Component to get
 -- @treturn Component
-function Entity:f_get(component_id) return self.__components[component_id] end
+function Entity:get(component_id) return self.__components[component_id] end
 
 --- Returns a read-only table of all Components the Entity has.
 -- @treturn table

@@ -1,680 +1,631 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
     <title>Reference</title>
     <link rel="stylesheet" href="../ldoc.css" type="text/css" />
-  </head>
-  <body>
-    <div id="container">
-      <div id="product">
-        <div id="product_logo"></div>
-        <div id="product_name">
-          <big><b></b></big>
-        </div>
-        <div id="product_description"></div>
-      </div>
-      <!-- id="product" -->
+</head>
+<body>
 
-      <div id="main">
-        <!-- Menu -->
+<div id="container">
 
-        <div id="navigation">
-          <br />
-          <h1>Concord</h1>
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
 
-          <ul>
-            <li><a href="../index.html">Index</a></li>
-          </ul>
 
-          <h2>Contents</h2>
-          <ul>
-            <li><a href="#Methods">Methods</a></li>
-            <li><a href="#Metamethods">Metamethods</a></li>
-            <li><a href="#Callbacks">Callbacks </a></li>
-          </ul>
+<div id="main">
 
-          <h2>Classes</h2>
-          <ul class="nowrap">
-            <li><a href="../classes/Component.html">Component</a></li>
-            <li><a href="../classes/Entity.html">Entity</a></li>
-            <li><a href="../classes/List.html">List</a></li>
-            <li><a href="../classes/Pool.html">Pool</a></li>
-            <li><a href="../classes/System.html">System</a></li>
-            <li><strong>World</strong></li>
-          </ul>
-          <h2>Modules</h2>
-          <ul class="nowrap">
-            <li><a href="../modules/Components.html">Components</a></li>
-            <li><a href="../modules/Type.html">Type</a></li>
-            <li><a href="../modules/Utils.html">Utils</a></li>
-          </ul>
-        </div>
 
-        <div id="content">
-          <h1>Class <code>World</code></h1>
-          <p>A collection of Systems and Entities.</p>
-          <p>
-            A World emits events to Systems. A World contains any amount of
-            Systems/Entities.
-          </p>
+<!-- Menu -->
 
-          <h2><a href="#Methods">Methods</a></h2>
-          <table class="function_list">
-            <tr>
-              <td class="name" nowrap><a href="#World:new">World:new ()</a></td>
-              <td class="summary">Creates a new World.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:addEntity">World:addEntity (entity)</a>
-              </td>
-              <td class="summary">Adds an Entity to the World.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:removeEntity">World:removeEntity (entity)</a>
-              </td>
-              <td class="summary">Removes an Entity from the World.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:addSystem">World:addSystem (system_class)</a>
-              </td>
-              <td class="summary">Adds a System to the World.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:addSystems">World:addSystems (...)</a>
-              </td>
-              <td class="summary">Adds multiple Systems to the World.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:hasSystem">World:hasSystem (system_class)</a>
-              </td>
-              <td class="summary">
-                Checks if the System has been added to the World
-              </td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:getSystem">World:getSystem (system_class)</a>
-              </td>
-              <td class="summary">Gets a System from the World.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:emit">World:emit (function_name, ...)</a>
-              </td>
-              <td class="summary">
-                Calls the method on all Systems that contain it
-              </td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:clear">World:clear ()</a>
-              </td>
-              <td class="summary">Removes all entities from the World</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:getEntities">World:getEntities ()</a>
-              </td>
-              <td class="summary">
-                Returns a read-only list of all entities in the World
-              </td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:getSystems">World:getSystems ()</a>
-              </td>
-              <td class="summary">
-                Returns a read-only list of all systems in the World
-              </td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:serialize">World:serialize ()</a>
-              </td>
-              <td class="summary">
-                Flushes any changes previously made, serializes any Entities
-                within it, and returns the results in a table
-              </td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:deserialize"
-                  >World:deserialize (data, append)</a
-                >
-              </td>
-              <td class="summary">
-                Creates & (possibly) adds to the World as many Entities as there
-                are data entries within the given serialized data and flushes
-                any changes previously made
-              </td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:hasName">World:hasName ()</a>
-              </td>
-              <td class="summary">Returns true if the World has a name.</td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:getName">World:getName ()</a>
-              </td>
-              <td class="summary">Returns the name of the World.</td>
-            </tr>
-          </table>
-          <h2><a href="#Metamethods">Metamethods</a></h2>
-          <table class="function_list">
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:__flush">World:__flush ()</a>
-              </td>
-              <td class="summary">
-                Internal: Flushes all changes to Entities.
-              </td>
-            </tr>
-          </table>
-          <h2><a href="#Callbacks">Callbacks </a></h2>
-          <table class="function_list">
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:onEntityAdded">World:onEntityAdded (entity)</a>
-              </td>
-              <td class="summary">
-                Callback for when an Entity is added to the World.
-              </td>
-            </tr>
-            <tr>
-              <td class="name" nowrap>
-                <a href="#World:onEntityRemoved"
-                  >World:onEntityRemoved (entity)</a
-                >
-              </td>
-              <td class="summary">
-                Callback for when an Entity is removed from the World.
-              </td>
-            </tr>
-          </table>
+<div id="navigation">
+<br/>
+<h1>Concord</h1>
 
-          <br />
-          <br />
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
 
-          <h2 class="section-header"><a name="Methods"></a>Methods</h2>
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+<li><a href="#Metamethods">Metamethods</a></li>
+<li><a href="#Callbacks">Callbacks </a></li>
+</ul>
 
-          <dl class="function">
-            <dt>
-              <a name="World:new"></a>
-              <strong>World:new ()</strong>
-            </dt>
-            <dd>
-              Creates a new World.
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:addEntity"></a>
-              <strong>World:addEntity (entity)</strong>
-            </dt>
-            <dd>
-              Adds an Entity to the World.
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Entity.html">Entity</a></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/Pool.html">Pool</a></li>
+  <li><a href="../classes/System.html">System</a></li>
+  <li><strong>World</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/Components.html">Components</a></li>
+  <li><a href="../modules/Type.html">Type</a></li>
+  <li><a href="../modules/Utils.html">Utils</a></li>
+</ul>
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">entity</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/Entity.html#"
-                      >Entity</a
-                    ></span
-                  >
-                  Entity to add
-                </li>
-              </ul>
+</div>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:removeEntity"></a>
-              <strong>World:removeEntity (entity)</strong>
-            </dt>
-            <dd>
-              Removes an Entity from the World.
+<div id="content">
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">entity</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/Entity.html#"
-                      >Entity</a
-                    ></span
-                  >
-                  Entity to remove
-                </li>
-              </ul>
+<h1>Class <code>World</code></h1>
+<p>A collection of Systems and Entities.</p>
+<p>
+ A World emits events to Systems.
+ A World contains any amount of Systems/Entities.</p>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:addSystem"></a>
-              <strong>World:addSystem (system_class)</strong>
-            </dt>
-            <dd>
-              Adds a System to the World. Callbacks are registered automatically
-              Entities added before are added to the System retroactively
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">system_class</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/System.html#"
-                      >System</a
-                    ></span
-                  >
-                  The SystemClass of the System to add
-                </li>
-              </ul>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#World:new">World:new ()</a></td>
+	<td class="summary">Creates a new World.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:addEntity">World:addEntity (entity)</a></td>
+	<td class="summary">Adds an Entity to the World.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:removeEntity">World:removeEntity (entity)</a></td>
+	<td class="summary">Removes an Entity from the World.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:addSystem">World:addSystem (system_class)</a></td>
+	<td class="summary">Adds a System to the World.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:addSystems">World:addSystems (...)</a></td>
+	<td class="summary">Adds multiple Systems to the World.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:hasSystem">World:hasSystem (system_class)</a></td>
+	<td class="summary">Checks if the System has been added to the World</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:getSystem">World:getSystem (system_class)</a></td>
+	<td class="summary">Gets a System from the World.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:emit">World:emit (function_name, ...)</a></td>
+	<td class="summary">Calls the method on all Systems that contain it</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:clear">World:clear ()</a></td>
+	<td class="summary">Removes all entities from the World</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:getEntities">World:getEntities ()</a></td>
+	<td class="summary">Returns a read-only list of all entities in the World</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:getSystems">World:getSystems ()</a></td>
+	<td class="summary">Returns a read-only list of all systems in the World</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:serialize">World:serialize ()</a></td>
+	<td class="summary">Flushes any changes previously made, serializes any Entities
+ within it, and returns the results in a table</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:deserialize">World:deserialize (data, append)</a></td>
+	<td class="summary">Creates & (possibly) adds to the World as many Entities
+ as there are data entries within the given serialized data
+ and flushes any changes previously made</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:hasName">World:hasName ()</a></td>
+	<td class="summary">Returns true if the World has a name.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:getName">World:getName ()</a></td>
+	<td class="summary">Returns the name of the World.</td>
+	</tr>
+</table>
+<h2><a href="#Metamethods">Metamethods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#World:__flush">World:__flush ()</a></td>
+	<td class="summary">Internal: Flushes all changes to Entities.</td>
+	</tr>
+</table>
+<h2><a href="#Callbacks">Callbacks </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#World:onEntityAdded">World:onEntityAdded (entity)</a></td>
+	<td class="summary">Callback for when an Entity is added to the World.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#World:onEntityRemoved">World:onEntityRemoved (entity)</a></td>
+	<td class="summary">Callback for when an Entity is removed from the World.</td>
+	</tr>
+</table>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
+<br/>
+<br/>
 
-              <h3>See also:</h3>
-              <ul>
-                <a href="../classes/World.html#World:emit">World:emit</a>
-              </ul>
-            </dd>
-            <dt>
-              <a name="World:addSystems"></a>
-              <strong>World:addSystems (...)</strong>
-            </dt>
-            <dd>
-              Adds multiple Systems to the World. Callbacks are registered
-              automatically
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">...</span>
-                  The SystemClasses of Systems to add
-                </li>
-              </ul>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
+    <dl class="function">
+    <dt>
+    <a name = "World:new"></a>
+    <strong>World:new ()</strong>
+    </dt>
+    <dd>
+    Creates a new World.
 
-              <h3>See also:</h3>
-              <ul>
-                <li>
-                  <a href="../classes/World.html#World:addSystem"
-                    >World:addSystem</a
-                  >
-                </li>
-                <li>
-                  <a href="../classes/World.html#World:emit">World:emit</a>
-                </li>
-              </ul>
-            </dd>
-            <dt>
-              <a name="World:hasSystem"></a>
-              <strong>World:hasSystem (system_class)</strong>
-            </dt>
-            <dd>
-              Checks if the System has been added to the World
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">system_class</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/System.html#"
-                      >System</a
-                    ></span
-                  >
-                  The SystemClass of the System to inspect
-                </li>
-              </ul>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"><span class="type">boolean</span></span>
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:getSystem"></a>
-              <strong>World:getSystem (system_class)</strong>
-            </dt>
-            <dd>
-              Gets a System from the World.
+    <h3>Returns:</h3>
+    <ol>
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">system_class</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/System.html#"
-                      >System</a
-                    ></span
-                  >
-                  The SystemClass of the System to get
-                </li>
-              </ul>
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/System.html#"
-                    >System</a
-                  ></span
-                >
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:emit"></a>
-              <strong>World:emit (function_name, ...)</strong>
-            </dt>
-            <dd>
-              Calls the method on all Systems that contain it
+    </ol>
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">function_name</span>
-                  <span class="types"
-                    ><a
-                      class="type"
-                      href="https://www.lua.org/manual/5.2/manual.html#6.4"
-                      >string</a
-                    ></span
-                  >
-                  The name of the functions to call.
-                </li>
-                <li>
-                  <span class="parameter">...</span>
-                  Parameters passed to System's functions
-                </li>
-              </ul>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:clear"></a>
-              <strong>World:clear ()</strong>
-            </dt>
-            <dd>
-              Removes all entities from the World
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:getEntities"></a>
-              <strong>World:getEntities ()</strong>
-            </dt>
-            <dd>
-              Returns a read-only list of all entities in the World
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a
-                    class="type"
-                    href="https://www.lua.org/manual/5.2/manual.html#6.5"
-                    >table</a
-                  ></span
-                >
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:getSystems"></a>
-              <strong>World:getSystems ()</strong>
-            </dt>
-            <dd>
-              Returns a read-only list of all systems in the World
+</dd>
+    <dt>
+    <a name = "World:addEntity"></a>
+    <strong>World:addEntity (entity)</strong>
+    </dt>
+    <dd>
+    Adds an Entity to the World.
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a
-                    class="type"
-                    href="https://www.lua.org/manual/5.2/manual.html#6.5"
-                    >table</a
-                  ></span
-                >
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:serialize"></a>
-              <strong>World:serialize ()</strong>
-            </dt>
-            <dd>
-              Flushes any changes previously made, serializes any Entities
-              within it, and returns the results in a table
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a
-                    class="type"
-                    href="https://www.lua.org/manual/5.2/manual.html#6.5"
-                    >table</a
-                  ></span
-                >
-              </ol>
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">entity</span>
+            <span class="types"><a class="type" href="../classes/Entity.html#">Entity</a></span>
+         Entity to add
+        </li>
+    </ul>
 
-              <h3>See also:</h3>
-              <ul>
-                <a href="../classes/Entity.html#Entity:serialize"
-                  >Entity:serialize</a
-                >
-              </ul>
-            </dd>
-            <dt>
-              <a name="World:deserialize"></a>
-              <strong>World:deserialize (data, append)</strong>
-            </dt>
-            <dd>
-              Creates & (possibly) adds to the World as many Entities as there
-              are data entries within the given serialized data and flushes any
-              changes previously made
+    <h3>Returns:</h3>
+    <ol>
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">data</span>
-                  <span class="types"
-                    ><a
-                      class="type"
-                      href="https://www.lua.org/manual/5.2/manual.html#6.5"
-                      >table</a
-                    ></span
-                  >
-                  The serialized data
-                </li>
-                <li>
-                  <span class="parameter">append</span>
-                  <span class="types"><span class="type">boolean</span></span>
-                  Determines whether to clear the World before deserializtion
-                  occurs
-                </li>
-              </ul>
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
 
-              <h3>See also:</h3>
-              <ul>
-                <li>
-                  <a href="../classes/Entity.html#Entity:deserialize"
-                    >Entity:deserialize</a
-                  >
-                </li>
-                <li>
-                  <a href="../classes/World.html#World:clear">World:clear</a>
-                </li>
-                <li>
-                  <a href="../classes/World.html#World:serialize"
-                    >World:serialize</a
-                  >
-                </li>
-              </ul>
-            </dd>
-            <dt>
-              <a name="World:hasName"></a>
-              <strong>World:hasName ()</strong>
-            </dt>
-            <dd>
-              Returns true if the World has a name.
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"><span class="type">boolean</span></span>
-              </ol>
-            </dd>
-            <dt>
-              <a name="World:getName"></a>
-              <strong>World:getName ()</strong>
-            </dt>
-            <dd>
-              Returns the name of the World.
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a
-                    class="type"
-                    href="https://www.lua.org/manual/5.2/manual.html#6.4"
-                    >string</a
-                  ></span
-                >
-              </ol>
-            </dd>
-          </dl>
-          <h2 class="section-header"><a name="Metamethods"></a>Metamethods</h2>
+</dd>
+    <dt>
+    <a name = "World:removeEntity"></a>
+    <strong>World:removeEntity (entity)</strong>
+    </dt>
+    <dd>
+    Removes an Entity from the World.
 
-          <dl class="function">
-            <dt>
-              <a name="World:__flush"></a>
-              <strong>World:__flush ()</strong>
-            </dt>
-            <dd>
-              Internal: Flushes all changes to Entities. This processes all
-              entities; Adding and removing entities, as well as re-evaluating
-              dirty entities.
 
-              <h3>Returns:</h3>
-              <ol>
-                <span class="types"
-                  ><a class="type" href="../classes/World.html#">World</a></span
-                >
-                self
-              </ol>
-            </dd>
-          </dl>
-          <h2 class="section-header"><a name="Callbacks"></a>Callbacks</h2>
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">entity</span>
+            <span class="types"><a class="type" href="../classes/Entity.html#">Entity</a></span>
+         Entity to remove
+        </li>
+    </ul>
 
-          <dl class="function">
-            <dt>
-              <a name="World:onEntityAdded"></a>
-              <strong>World:onEntityAdded (entity)</strong>
-            </dt>
-            <dd>
-              Callback for when an Entity is added to the World.
+    <h3>Returns:</h3>
+    <ol>
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">entity</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/Entity.html#"
-                      >Entity</a
-                    ></span
-                  >
-                  The Entity that was added
-                </li>
-              </ul>
-            </dd>
-            <dt>
-              <a name="World:onEntityRemoved"></a>
-              <strong>World:onEntityRemoved (entity)</strong>
-            </dt>
-            <dd>
-              Callback for when an Entity is removed from the World.
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
 
-              <h3>Parameters:</h3>
-              <ul>
-                <li>
-                  <span class="parameter">entity</span>
-                  <span class="types"
-                    ><a class="type" href="../classes/Entity.html#"
-                      >Entity</a
-                    ></span
-                  >
-                  The Entity that was removed
-                </li>
-              </ul>
-            </dd>
-          </dl>
-        </div>
-        <!-- id="content" -->
-      </div>
-      <!-- id="main" -->
-      <div id="about">
-        <i
-          >generated by
-          <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i
-        >
-        <i style="float: right">Last updated 2022-08-14 22:24:10 </i>
-      </div>
-      <!-- id="about" -->
-    </div>
-    <!-- id="container" -->
-  </body>
+
+
+
+</dd>
+    <dt>
+    <a name = "World:addSystem"></a>
+    <strong>World:addSystem (system_class)</strong>
+    </dt>
+    <dd>
+    Adds a System to the World.
+ Callbacks are registered automatically
+ Entities added before are added to the System retroactively
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">system_class</span>
+            <span class="types"><a class="type" href="../classes/System.html#">System</a></span>
+         The SystemClass of the System to add
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/World.html#World:emit">World:emit</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "World:addSystems"></a>
+    <strong>World:addSystems (...)</strong>
+    </dt>
+    <dd>
+    Adds multiple Systems to the World.
+ Callbacks are registered automatically
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         The SystemClasses of Systems to add
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <li><a href="../classes/World.html#World:addSystem">World:addSystem</a></li>
+         <li><a href="../classes/World.html#World:emit">World:emit</a></li>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "World:hasSystem"></a>
+    <strong>World:hasSystem (system_class)</strong>
+    </dt>
+    <dd>
+    Checks if the System has been added to the World
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">system_class</span>
+            <span class="types"><a class="type" href="../classes/System.html#">System</a></span>
+         The SystemClass of the System to inspect
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:getSystem"></a>
+    <strong>World:getSystem (system_class)</strong>
+    </dt>
+    <dd>
+    Gets a System from the World.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">system_class</span>
+            <span class="types"><a class="type" href="../classes/System.html#">System</a></span>
+         The SystemClass of the System to get
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/System.html#">System</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:emit"></a>
+    <strong>World:emit (function_name, ...)</strong>
+    </dt>
+    <dd>
+    Calls the method on all Systems that contain it
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">function_name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         The name of the functions to call.
+        </li>
+        <li><span class="parameter">...</span>
+         Parameters passed to System's functions
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:clear"></a>
+    <strong>World:clear ()</strong>
+    </dt>
+    <dd>
+    Removes all entities from the World
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:getEntities"></a>
+    <strong>World:getEntities ()</strong>
+    </dt>
+    <dd>
+    Returns a read-only list of all entities in the World
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.5">table</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:getSystems"></a>
+    <strong>World:getSystems ()</strong>
+    </dt>
+    <dd>
+    Returns a read-only list of all systems in the World
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.5">table</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:serialize"></a>
+    <strong>World:serialize ()</strong>
+    </dt>
+    <dd>
+    Flushes any changes previously made, serializes any Entities
+ within it, and returns the results in a table
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.5">table</a></span>
+
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Entity.html#Entity:serialize">Entity:serialize</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "World:deserialize"></a>
+    <strong>World:deserialize (data, append)</strong>
+    </dt>
+    <dd>
+    Creates & (possibly) adds to the World as many Entities
+ as there are data entries within the given serialized data
+ and flushes any changes previously made
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">data</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.5">table</a></span>
+         The serialized data
+        </li>
+        <li><span class="parameter">append</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Determines whether to clear
+ the World before deserializtion occurs
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <li><a href="../classes/Entity.html#Entity:deserialize">Entity:deserialize</a></li>
+         <li><a href="../classes/World.html#World:clear">World:clear</a></li>
+         <li><a href="../classes/World.html#World:serialize">World:serialize</a></li>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "World:hasName"></a>
+    <strong>World:hasName ()</strong>
+    </dt>
+    <dd>
+    Returns true if the World has a name.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:getName"></a>
+    <strong>World:getName ()</strong>
+    </dt>
+    <dd>
+    Returns the name of the World.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Metamethods"></a>Metamethods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "World:__flush"></a>
+    <strong>World:__flush ()</strong>
+    </dt>
+    <dd>
+    Internal: Flushes all changes to Entities.
+ This processes all entities; Adding and removing entities,
+ as well as re-evaluating dirty entities.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/World.html#">World</a></span>
+        self
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Callbacks"></a>Callbacks </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "World:onEntityAdded"></a>
+    <strong>World:onEntityAdded (entity)</strong>
+    </dt>
+    <dd>
+    Callback for when an Entity is added to the World.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">entity</span>
+            <span class="types"><a class="type" href="../classes/Entity.html#">Entity</a></span>
+         The Entity that was added
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "World:onEntityRemoved"></a>
+    <strong>World:onEntityRemoved (entity)</strong>
+    </dt>
+    <dd>
+    Callback for when an Entity is removed from the World.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">entity</span>
+            <span class="types"><a class="type" href="../classes/Entity.html#">Entity</a></span>
+         The Entity that was removed
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-09-20 21:34:49 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
 </html>
