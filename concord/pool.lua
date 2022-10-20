@@ -26,13 +26,16 @@ end
 -- @tparam Entity entity The entity to inspect
 -- @treturn boolean
 function Pool:eligible(entity)
+    local result = false
     for i = #self.__filter, 1, -1 do
         local component_id = self.__filter[i].__id
 
-        if not entity.__components[component_id] then return false end
+        if (not result) and entity.__components[component_id] then
+            result = true
+        end
     end
 
-    return true
+    return result
 end
 
 -- Adds an Entity to the Pool, if it is eligble @see Pool:eligble
@@ -63,16 +66,16 @@ end
 -- @tparam Entity entity The Entity to be inspected
 -- @treturn Pool self
 function Pool:evaluate(entity)
-    local result = false
-    for i = #self.__filter, 1, -1 do
-        local component_id = self.__filter[i].__id
+    local has = self:has(entity)
+    local eligible = self:eligible(entity)
 
-        if (not result) and entity.__components[component_id] then
-            result = true
-        end
+    if not has and eligible then
+        self:add(entity, true) -- Bypass the check cause we already checked
+    elseif has and not eligible then
+        self:remove(entity)
     end
 
-    return result
+    return self
 end
 
 --- Gets a read-only version of the filter associated with the Pool
