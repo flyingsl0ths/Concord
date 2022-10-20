@@ -7,7 +7,7 @@ local Utils = require(PATH .. ".utils")
 
 local Pool = {}
 
-Pool.__mt = {__index = Pool}
+Pool.__mt = { __index = Pool }
 
 --- Creates a new Pool
 -- @tparam table filter The table containing the required component ids
@@ -63,17 +63,16 @@ end
 -- @tparam Entity entity The Entity to be inspected
 -- @treturn Pool self
 function Pool:evaluate(entity)
-    local has = self:has(entity)
-    local eligible = self:eligible(entity)
+    local result = false
+    for i = #self.__filter, 1, -1 do
+        local component_id = self.__filter[i].__id
 
-    if not has and eligible then
-        -- Bypass the check because we have already checked
-        self:add(entity, true)
-    elseif has and not eligible then
-        self:remove(entity)
+        if (not result) and entity.__components[component_id] then
+            result = true
+        end
     end
 
-    return self
+    return result
 end
 
 --- Gets a read-only version of the filter associated with the Pool
